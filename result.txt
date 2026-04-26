@@ -1,14 +1,1 @@
-/bin/sh: 6: 
-Cloud-Strike: Shadow Backup & Cloud Leak Detection Tool
-==========================================================
-A script to search for cloud exposures and shadow backups associated with phone numbers.
-: not found
-/bin/sh: 8: import: not found
-/bin/sh: 9: import: not found
-/bin/sh: 10: import: not found
-/bin/sh: 11: import: not found
-/bin/sh: 12: import: not found
-/bin/sh: 13: import: not found
-/bin/sh: 15: phone: not found
-/bin/sh: 16: clean_num: not found
-/bin/sh: 18: Syntax error: word unexpected (expecting ")")
+/bin/sh: 2: Syntax error: word unexpected (expecting ")")
