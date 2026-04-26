@@ -6,85 +6,9 @@ Requirement already satisfied: idna<4,>=2.5 in /opt/hostedtoolcache/Python/3.14.
 Requirement already satisfied: urllib3<3,>=1.26 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2.6.3)
 Requirement already satisfied: certifi>=2023.5.7 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2026.4.22)
 Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 12.0 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 15.2 MB/s  0:00:00
 Installing collected packages: phonenumbers
 Successfully installed phonenumbers-9.0.29
-============================================================
-METADATA-PULSE: Profile & Status Detection
-============================================================
-Target: +919849257983
-Gathering public metadata and profile info...
-
-[1/5] Checking WhatsApp profile metadata...
-  WhatsApp API URL: https://api.whatsapp.com/send?phone=9849257983
-  Method: Link validation (no profile data publicly exposed)
-  Status: Privacy-protected profile
-
-[2/5] Checking Telegram profile metadata...
-  Telegram Profile URL: https://t.me/+9849257983
-  Method: API unavailable (requires user consent)
-  Status: Privacy-protected profile
-
-[3/5] Checking UPI display names...
-  Checking: 9849257983@paytm
-    Status: Name NOT PUBLICALLY AVAILABLE
-  Checking: 9849257983@ybl
-    Status: Name NOT PUBLICALLY AVAILABLE
-  Checking: 9849257983@oksbi
-    Status: Name NOT PUBLICALLY AVAILABLE
-
-[4/5] Searching public metadata sources...
-  Metadata dorks executed: 3
-    Dork 1: "9849257983@oksbi" ("profile" OR "display" OR "nam...
-    Result: 90346 bytes returned
-    Dork 2: "+919849257983" site:api.whatsapp.com OR site:t.me...
-    Result: 90007 bytes returned
-    Dork 3: site:upibanks.in OR site:nsi.gov.in "9849257983"...
-    Result: 90290 bytes returned
-
-[5/5] Compiling Metadata Pulse Report...
-
-============================================================
-METADATA-PULSE REPORT COMPILED
-============================================================
-
-Target Phone: +919849257983
-WhatsApp Profile URL: https://api.whatsapp.com/send?phone=9849257983
-Telegram Profile URL: https://t.me/+9849257983
-UPI Handles Checked: 3
-Metadata Dorks Executed: 3
-
-WHATSAPP STATUS:
--   profile_url: https://api.whatsapp.com/send?phone=9849257983
-  profile_picture: NOT PUBLIC (privacy-protected)
-  about_status: NOT PUBLIC (privacy-protected)
-  last_seen: NOT PUBLIC (privacy-protected)
-  online_status: NOT PUBLIC (privacy-protected)
-
-TELEGRAM STATUS:
--   profile_url: https://t.me/+9849257983
-  profile_picture: NOT PUBLIC (privacy-protected)
-  about_status: NOT PUBLIC (privacy-protected)
-  last_seen: NOT PUBLIC (privacy-protected)
-  online_status: NOT PUBLIC (privacy-protected)
-
-UPI DISPLAY NAMES:
-  9849257983@paytm: NOT PUBLIC (UPI name resolution requires bank verification)
-  9849257983@ybl: NOT PUBLIC (UPI name resolution requires bank verification)
-  9849257983@oksbi: NOT PUBLIC (UPI name resolution requires bank verification)
-
-============================================================
-PRIVACY NOTICE:
-============================================================
-WhatsApp, Telegram, and UPI systems are:
-- End-to-end encrypted (WhatsApp)
-- Privacy-protected (Telegram)
-- Bank-secured (UPI)
-
-Public API access is limited to prevent Doxing.
-Profile data requires:
-  1. Phone-based OTP verification
-  2. Mutual contact consent
-  3. Direct app interaction with verified user
-
-Metadata Pulse saved to result.txt
+  File "<string>", line 182
+    print('  - No email associations found in public dumps')
+IndentationError: unexpected indent
