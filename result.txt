@@ -1,17 +1,33 @@
-Collecting phonenumbers
-  Downloading phonenumbers-9.0.29-py2.py3-none-any.whl.metadata (10 kB)
 Requirement already satisfied: requests in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (2.33.1)
 Requirement already satisfied: charset_normalizer<4,>=2 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.4.7)
 Requirement already satisfied: idna<4,>=2.5 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.13)
 Requirement already satisfied: urllib3<3,>=1.26 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2.6.3)
 Requirement already satisfied: certifi>=2023.5.7 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2026.4.22)
-Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 27.4 MB/s  0:00:00
-Installing collected packages: phonenumbers
-Successfully installed phonenumbers-9.0.29
-Location: India
-Carrier: Airtel
-Timezone: ('Asia/Calcutta',)
-Type: 1
-E164: +919849257983
-Is Valid: True
+============================================================
+LEAK-SNIPER: Google Dorking Scan
+============================================================
+Target: +919849257983
+Searching for digital footprint exposure...
+
+[1/4] Scanning GitHub for exposed files...
+  Dork 1/3: Found 0 potential matches
+  Dork 2/3: Found 0 potential matches
+  Dork 3/3: Found 0 potential matches
+
+[2/4] Checking public directories...
+  Searching directories: "+919849257983" OR "9849257983919849257983" -inurl:google -inurl:wikipedia
+  Note: Full directory listing requires custom headers/API
+
+[3/4] Checking config/credential files...
+  Dorks searched: 2
+
+[4/4] Checking data breach databases...
+  HaveIBeenPwned: Not queried (requires API key)
+  Dehashed: Not queried (not public)
+  LeakedBase: Not queried (not public)
+
+============================================================
+SCAN COMPLETE
+============================================================
+Total dorks executed: 7
+Results saved to result.txt
