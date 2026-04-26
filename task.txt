@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""
+Secret-Audit script for aria-agentworks repositories
+Scans GitHub repositories for common secret patterns and credential exposures.
+"""
+
+import requests
+import re
+import json
+from typing import List, Dict, Any
+from datetime import datetime
+
+# GitHub API credentials (replace with actual token)
+GITHUB_TOKEN = "YOUR_GITHUB_TOKEN_HERE"
+OWNER = "aria-agentworks"
+
+# Secret patterns to scan for
+SECRET_PATTERNS = {
+    "AWS": r"(\b[A-Z0-9]{20}\b|\b[A-Za-z0-9/+=]{40}\b|\bAWS[_-]?[_A-Z]{2,}){1,2}",
+    "GITHUB_PAT": r"(ghp_[a-zA-Z0-9]{36}|gho_[a-zA-Z0-9]{36}|ghu_[a-zA-Z0-9]{36}|ghs_[a-zA-Z0-9]{36}|ghr_[a-zA-Z0-9]{36})",
+    "SECRET_KEY": r"(SECRET[_-]?KEY|secret[_-]key|SECRET_KEY[_=:])(\s*=[\s]*[\'\"]?[^\'\s\n]{8,})",
+    "PASSWORD": r"(PASSWORD|passwd|pwd|password)[\s]*[=:][\s]*[\'\"]?[^\'\s\n]{4,}",
+    "API_KEY": r"(API[_-]?KEY|api[_-]key|APIKEY|api[_-]key)[\s]*[=:][\s]*[\'\"]?[^\'\s\n]{8,}",
+    "ENv_FILES": r"[\.\-]?(env|\.env)(\s|\n|$)",
+    "PRIVATE_KEY": r"(BEGIN\s+(RSA\s+)?PRIVATE\s+KEY|BEGIN\s+EC\s+PRIVATE\s+KEY|BEGIN\s+OPENSSH\s+PRIVATE\s+KEY)",
+    "TOKEN": r"(token|TOKEN)(\s*=[\s]*[\'\"]?)[a-zA-Z0-9_\-\.]{20,}",
+    "CREDENTIAL": r"(credential|CREDENTIAL|cred|CRED)(\s*=[\s]*[\'\"]?)[a-zA-Z0-9_\-\.]{8,}"
+}
+
+ALL_SECRETS = [
+    "AWS_", "GITHUB_PAT", "SECRET_KEY", "PASSWORD", "API_KEY", ".env", 
+    "private_key", "token", "credential"
+]
+
+HEADERS = {
+    "Authorization": f"token {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github.v3+json"
+}
+
+def get_all_repositories(owner: str) -> List[Dict[str, Any]]:
+    """Fetch all repositories for the specified owner."""
+    repos = []
+    page = 1
+    per_page = 100
+    
+    while True:
+        url = f"https://api.github.com/users/{owner}/repos"
+        params = {"per_page": per_page, "page": page, "type": "all", "sort": "updated"}
+        response = requests.get(url, headers=HEADERS, params=params)
+        
+        if response.status_code != 200:
+            print(f"Error fetching repos: {response.status_code}")
+            break
+        
+        data = response.json()
+        if not data:
+            break
+            
+        repos.extend(data)
+        if len(data) < per_page:
+            break
+        page += 1
+    
+    return repos
+
+def get_repo_files(owner: str, repo: str, branch: str = "main") -> List[Dict[str, Any]]:
+    """Get all files in a repository recursively."""
+    files = []
+    url = f"https://api.github.com/repos/{owner}/{repo}/contents"
+    params = {"ref": branch}
+    
+    try:
+        response = requests.get(url, headers=HEADERS, params=params)
+        if response.status_code == 200:
+            items = response.json()
+            for item in items:
+                if item["type"] == "file":
+                    files.append(item)
+                elif item["type"] == "dir":
+                    # Recursively get files from subdirectories
+                    subfiles = get_repo_files(owner, repo, branch)  # Simplified
+    except Exception as e:
+        print(f"Error fetching files: {e}")
+    
+    return files
+
+def scan_file_content(file_data: Dict[str, Any], secrets_list: List[str]) -> List[Dict[str, Any]]:
+    """Scan file content for secret patterns."""
+    found_secrets = []
+    
+    try:
+        # Get file content
+        content_url = file_data.get("download_url")
+        if not content_url:
+            return found_secrets
+        
+        response = requests.get(content_url, headers=HEADERS)
+        if response.status_code != 200:
+            return found_secrets
+        
+        content = response.text
+        
+        # Check for sensitive filenames
+        filename = file_data.get("name", "").lower()
+        for secret in secrets_list:
+            if secret.lower() == ".env" and "env" in filename:
+                found_secrets.append({
+                    "type": "SUSPICIOUS_FILENAME",
+                    "pattern": secret,
+                    "file": file_data.get("path", ""),
+                    "match": f"Filename contains '{secret}'"
+                })
+        
+        # Check content against patterns
+        for secret_type, pattern in SECRET_PATTERNS.items():
+            matches = re.finditer(pattern, content, re.IGNORECASE)
+            for match in matches:
+                # Context around the match
+                context_start = max(0, match.start() - 50)
+                context_end = min(len(content), match.end() + 50)
+                preview = content[context_start:context_end].replace('\n', ' ').strip()
+                
+                found_secrets.append({
+                    "type": secret_type,
+                    "pattern": pattern,
+                    "file": file_data.get("path", ""),
+                    "match": match.group(),
+                    "preview": f"...{preview}..."
+                })
+                # Only report first few matches to avoid overflow
+                if len(found_secrets) >= 50:
+                    break
+        
+    except Exception as e:
+        print(f"Error scanning file {file_data.get('path', '')}: {e}")
+    
+    return found_secrets
+
+def scan_repository(owner: str, repo: str, secrets_list: List[str]) -> Dict[str, Any]:
+    """Scan a single repository for secrets."""
+    report = {
+        "repository": repo,
+        "scan_time": datetime.now().isoformat(),
+        "secrets_found": [],
+        "critical_level": 0,
+        "medium_level": 0,
+        "low_level": 0
+    }
+    
+    # Get repository files (simplified - would need proper recursive traversal)
+    print(f"Scanning {owner}/{repo}...")
+    
+    # Example: check common secret files
+    common_paths = [".env", ".env.local", "config.json", "settings.py", "secrets.json", 
+                    ".git/config", "id_rsa", "id_rsa.pub", "credentials.json"]
+    
+    for path in common_paths:
+        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+        response = requests.get(url, headers=HEADERS)
+        if response.status_code == 200:
+            file_data = response.json()
+            secrets = scan_file_content(file_data, secrets_list)
+            report["secrets_found"].extend(secrets)
+    
+    # Categorize severity
+    for secret in report["secrets_found"]:
+        secret_type = secret.get("type", "").upper()
+        if "PRIVATE_KEY" in secret_type or "PASSWORD" in secret_type:
+            report["critical_level"] += 1
+        elif "AWS" in secret_type or "API_KEY" in secret_type or "GITHUB_PAT" in secret_type:
+            report["medium_level"] += 1
+        else:
+            report["low_level"] += 1
+    
+    return report
+
+def generate_report(all_reports: List[Dict[str, Any]], secrets_list: List[str]) -> str:
+    """Generate a comprehensive audit report."""
+    report = []
+    report.append("=" * 80)
+    report.append("SECRET AUDIT REPORT - aria-agentworks")
+    report.append(f"Generated: {datetime.now().isoformat()}")
+    report.append(f"Scanned Patterns: {', '.join(secrets_list)}")
+    report.append("=" * 80)
+    report.append("")
+    
+    total_critical = 0
+    total_medium = 0
+    total_low = 0
+    
+    for r in all_reports:
+        report.append(f"REPOSITORY: {r['repository']}")
+        report.append("-" * 40)
+        report.append(f"Scan Time: {r['scan_time']}")
+        report.append(f"Critical: {r['critical_level']}, Medium: {r['medium_level']}, Low: {r['low_level']}")
+        
+        if r["secrets_found"]:
+            report.append("\nFINDINGS:")
+            for i, secret in enumerate(r["secrets_found"], 1):
+                report.append(f"{i}. [{secret['type']}]")
+                report.append(f"   File: {secret['file']}")
+                report.append(f"   Match: {secret.get('preview', secret.get('match', ''))[:100]}...")
+                report.append("")
+        else:
+            report.append("No secrets found.")
+        report.append("")
+        
+        total_critical += r['critical_level']
+        total_medium += r['medium_level']
+        total_low += r['low_level']
+    
+    report.append("=" * 80)
+    report.append("SUMMARY")
+    report.append("=" * 80)
+    report.append(f"Total Critical Vulnerabilities: {total_critical}")
+    report.append(f"Total Medium Vulnerabilities: {total_medium}")
+    report.append(f"Total Low Vulnerabilities: {total_low}")
+    report.append(f"Total Issues Found: {total_critical + total_medium + total_low}")
+    report.append("=" * 80)
+    
+    return "\n".join(report)
+
+def main():
+    """Main execution function."""
+    print("Starting Secret Audit for aria-agentworks repositories...")
+    print(f"Target Owner: {OWNER}")
+    print(f"Secret Patterns to Scan: {', '.join(ALL_SECRETS)}")
+    print("")
+    
+    # Get all repositories
+    repositories = get_all_repositories(OWNER)
+    print(f"Found {len(repositories)} repositories to scan")
+    print("")
+    
+    # Scan each repository
+    all_reports = []
+    for repo in repositories:
+        repo_report = scan_repository(OWNER, repo["name"], ALL_SECRETS)
+        all_reports.append(repo_report)
+        
+        # Show progress
+        critical = repo_report["critical_level"]
+        medium = repo_report["medium_level"]
+        low = repo_report["low_level"]
+        total = critical + medium + low
+        if total > 0:
+            print(f"  ⚠️  {repo['name']}: {total} issues ({critical} critical)")
+        else:
+            print(f"  ✓ {repo['name']}: Clean")
+    
+    print("")
+    print("=" * 80)
+    print("Generating final report...")
+    
+    # Generate and print report
+    final_report = generate_report(all_reports, ALL_SECRETS)
+    print(final_report)
+    
+    # Save report to file
+    report_filename = f"secret_audit_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    with open(report_filename, "w") as f:
+        f.write(final_report)
+    
+    print(f"\nReport saved to: {report_filename}")
+    
+    # Return summary for programmatic use
+    summary = {
+        "total_repositories": len(repositories),
+        "total_secrets_found": sum(r["critical_level"] + r["medium_level"] + r["low_level"] for r in all_reports),
+        "critical_count": sum(r["critical_level"] for r in all_reports),
+        "medium_count": sum(r["medium_level"] for r in all_reports),
+        "low_count": sum(r["low_level"] for r in all_reports),
+        "report_file": report_filename,
+        "report": final_report
+    }
+    
+    print("\nSUMMARY:")
+    print(f"  - Repositories scanned: {summary['total_repositories']}")
+    print(f"  - Critical vulnerabilities: {summary['critical_count']}")
+    print(f"  - Medium vulnerabilities: {summary['medium_count']}")
+    print(f"  - Low vulnerabilities: {summary['low_count']}")
+
+if __name__ == "__main__":
+    main()
