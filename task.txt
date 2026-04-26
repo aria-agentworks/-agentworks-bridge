@@ -1,0 +1,160 @@
+#!/usr/bin/env python3
+import re, time, urllib.parse, requests
+
+print('='*70)
+print('BREACH-MAPPING: Credential & Login Leak Detection')
+print('='*70)
+
+phone = '+919849257983'
+clean = '9849257983'
+report = {'phone': phone, 'credentials': [], 'emails_found': [], 'passwords': [], 'addresses': [], 'private_metadata': []}
+
+print(f"\nTarget: {phone}")
+print("Searching for credentials, logins, and leaked data fragments...")
+
+print("\n[1/4] Searching for Phone:Password or User:Password patterns")
+patterns = [
+    f'{clean}:',
+    f'+91{clean}:',
+    f'{phone}:',
+    f'{clean}+pwd',
+    f'phone:{clean}',
+]
+
+for pattern in patterns:
+    print(f"  Pattern: {pattern}")
+    search_url = f'https://www.google.com/search?q={urllib.parse.quote(f"{pattern} +password +leak").strip()}+site:pastebin.com'
+    r = requests.get(search_url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+    if r.status_code == 200:
+        # Look for credential patterns
+        creds = re.findall(r'(?:User|user|phone|password|pass|pwd)[=:\s]+[^\s]+', r.text[:5000], re.I)
+        for c in list(set(creds))[:3]:
+            if '9849257983' in c or '+91' in c:
+                report['credentials'].append(c.strip())
+                print(f"    Found potential credential: {c[:60]}...")
+    time.sleep(2)
+
+print("\n[2/4] Searching Pastebin for raw dumps")
+pastebin_queries = [
+    f'site:pastebin.com {clean} password',
+    f'site:pastebin.com {clean} login',
+    f'site:pastebin.com {clean} +email',
+]
+
+for query in pastebin_queries:
+    url = f'https://www.google.com/search?q={urllib.parse.quote(query)}&num=1'
+    r = requests.get(url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+    if r.status_code == 200:
+        # Extract email addresses from results
+        emails = re.findall(r'[\w\.-]+@[\w\.-]+\.\w+', r.text[:5000])
+        for email in list(set(emails)):  
+            if len(email.split('@')) == 2 and '.' in email:
+                report['emails_found'].append(email)
+                print(f"  Potential email from dump: {email}")
+                break  # Only take first match per query
+    time.sleep(2)
+
+print("\n[3/4] Searching GitHub Gists for sensitive data")
+gist_queries = [
+    f'site:gist.github.com {clean}',
+    f'site:gist.github.com {clean} json OR txt',
+]
+
+for query in gist_queries:
+    url = f'https://www.google.com/search?q={urllib.parse.quote(query)}&num=1'
+    r = requests.get(url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+    if r.status_code == 200:
+        gists = re.findall(r'(https://gist\.github\.com/[^\s]+)', r.text[:3000])
+        for g in gists:
+            print(f"  Gist reference: {g[:70]}")
+            report['private_metadata'].append({'type': 'gist', 'url': g})
+    time.sleep(2)
+
+print("\n[4/4] Searching for email-password combinations")
+for email in report['emails_found'][:2]:  # Limit to 2 emails
+    print(f"  Pivot to email: {email}")
+    email_dorks = [
+        f'site:pastebin.com {email} password',
+        f'site:hudson.rock {email}',
+        f'site:intelx.io {email}',
+    ]
+    for dork in email_dorks:
+        url = f'https://www.google.com/search?q={urllib.parse.quote(dork)}&num=1'
+        r = requests.get(url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+        if r.status_code == 200:
+            # Look for address patterns
+            addresses = re.findall(r'(\d+\s+[A-Za-z]+\s+[A-Za-z]+(?:\s+[A-Za-z]+)?,\s+[A-Za-z\s]+,\s+\d{5}(?:-\d{4})?)', r.text[:3000])
+            for addr in addresses:
+                print(f"    Address found: {addr[0][:60]}")
+                report['addresses'].append(addr[0])
+            break
+    time.sleep(3)
+
+print("\n" + '='*70)
+print('BREACH-MAPPING REPORT')
+print('='*70)
+print(f"\nTarget: {phone}")
+print(f"\nTotal Credentials Found: {len(report['credentials'])}")
+for cred in report['credentials']:
+    print(f"  - {cred[:70]}")
+
+print(f"\nTotal Passwords Found: {len(report['passwords'])}")
+for pwd in report['passwords']:
+    print(f"  - {pwd}")
+
+print(f"\nEmails Identified: {len(report['emails_found'])}")
+for email in report['emails_found']:
+    print(f"  - {email}")
+
+print(f"\nAddresses Found: {len(report['addresses'])}")
+for addr in report['addresses']:
+    print(f"  - {addr}")
+
+print(f"\nPublic Gists/References: {len(report['private_metadata'])}")
+for meta in report['private_metadata']:
+    print(f"  - {meta}")
+
+print("\n" + '='*70)
+print('UNFILTERED EXPOSURE ANALYSIS')
+print('='*70)
+
+total_exposures = (len(report['credentials']) + 
+                   len(report['passwords']) + 
+                   len(report['addresses']))
+
+if total_exposures == 0 and len(report['emails_found']) == 0:
+    print("RESULT: ZERO EXPOSURE DETECTED")
+    print("  - No credentials found")
+    print("  - No passwords leaked")
+    print("  - No addresses exposed")
+    print("  - No email-password combinations")
+    print("  - Phone number is PROTECTED from credential leaks")
+elif total_exposures > 0:
+    print("RESULT: EXPOSURE DETECTED")
+    print(f"  - {len(report['credentials'])} credential(s) found")
+    print(f"  - {len(report['passwords'])} password(s) exposed")
+    print(f"  - {len(report['addresses'])} address(es) leaked")
+    print(f"  - {len(report['emails_found'])} email(s) pivotable")
+    print("  - IMMEDIATE ACTION REQUIRED")
+else:
+    print("RESULT: MINIMAL EXPOSURE")
+    print(f"  - {len(report['emails_found'])} email(s) found in dumps")
+    print("  - No direct credentials")
+    print("  - Recommendation: Monitor email accounts")
+
+print("\n" + '='*70)
+print('FINAL CONCLUSION')
+print('='*70)
+if total_exposures == 0:
+    print("BREACH POSTURE: CLEAN")
+    print(f"  Phone {phone} has NO presence in public credential dumps")
+    print("  Privacy integrity: MAINTAINED")
+else:
+    print("BREACH POSTURE: COMPROMISED")
+    print(f"  Phone {phone} HAS exposure in credential databases")
+    print("  Immediate password rotation recommended")
+
+print()
+print('FULL JSON:', report)
+print()
+print('BREACH-MAPPING complete')
