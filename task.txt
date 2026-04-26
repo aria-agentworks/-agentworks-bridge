@@ -1,1 +1,1 @@
-echo "Bridge Active" && nmap --version
+echo "Actions Bridge Active" && nmap --version
