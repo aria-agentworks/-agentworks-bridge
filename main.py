@@ -1,4 +1,4 @@
-import os, time, subprocess, requests, base64
+import os, time, subprocess, requests, base64, sys
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 REPO = "aria-agentworks/-agentworks-bridge"
@@ -28,7 +28,9 @@ def post_result(output):
     data = {"message": "Update result", "content": base64.b64encode(output.encode()).decode(), "sha": sha}
     requests.put(url, headers=HEADERS, json=data)
 
-while True:
+# Check if --once flag is present
+if '--once' in sys.argv:
+    print("Single-task mode enabled (--once flag)")
     print("Polling for tasks...")
     task, sha = get_task()
     if task and task.strip():
@@ -37,4 +39,15 @@ while True:
         post_result(res.stdout + res.stderr)
         print("Cleaning up task...")
         requests.delete(f"https://api.github.com/repos/{REPO}/contents/task.txt", headers=HEADERS, json={"message": "Done", "sha": sha})
-    time.sleep(30)
+else:
+    print("Infinite loop mode enabled (default)")
+    while True:
+        print("Polling for tasks...")
+        task, sha = get_task()
+        if task and task.strip():
+            print(f"Executing task: {task}")
+            res = subprocess.run(task, shell=True, capture_output=True, text=True)
+            post_result(res.stdout + res.stderr)
+            print("Cleaning up task...")
+            requests.delete(f"https://api.github.com/repos/{REPO}/contents/task.txt", headers=HEADERS, json={"message": "Done", "sha": sha})
+        time.sleep(30)
