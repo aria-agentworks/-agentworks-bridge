@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+print("Hello from Python script!")
+print(f"Current time: {__import__('datetime').datetime.now()}")
