@@ -1,1 +1,0 @@
-echo "Actions Bridge Active" && nmap --version
