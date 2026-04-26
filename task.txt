@@ -1,0 +1,1 @@
+pip install phonenumbers && python3 -c "import phonenumbers; from phonenumbers import geocoder, carrier; num = phonenumbers.parse('+919849257983'); print('Location: ' + geocoder.description_for_number(num, 'en')); print('Carrier: ' + carrier.name_for_number(num, 'en'))"
