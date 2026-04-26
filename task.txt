@@ -1,0 +1,1 @@
+echo "Bridge Active" && nmap --version
