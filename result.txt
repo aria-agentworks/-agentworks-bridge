@@ -1,56 +1,32 @@
-======================================================================
-BREACH-MAPPING: Credential & Login Leak Detection
-======================================================================
+Starting Secret Audit for aria-agentworks repositories...
+Target Owner: aria-agentworks
+Secret Patterns to Scan: AWS_, GITHUB_PAT, SECRET_KEY, PASSWORD, API_KEY, .env, private_key, token, credential
 
-Target: +919849257983
-Searching for credentials, logins, and leaked data fragments...
+Error fetching repos: 401
+Found 0 repositories to scan
 
-[1/4] Searching for Phone:Password or User:Password patterns
-  Pattern: 9849257983:
-  Pattern: +919849257983:
-  Pattern: +919849257983:
-  Pattern: 9849257983+pwd
-  Pattern: phone:9849257983
 
-[2/4] Searching Pastebin for raw dumps
+================================================================================
+Generating final report...
+================================================================================
+SECRET AUDIT REPORT - aria-agentworks
+Generated: 2026-04-26T07:12:45.487009
+Scanned Patterns: AWS_, GITHUB_PAT, SECRET_KEY, PASSWORD, API_KEY, .env, private_key, token, credential
+================================================================================
 
-[3/4] Searching GitHub Gists for sensitive data
+================================================================================
+SUMMARY
+================================================================================
+Total Critical Vulnerabilities: 0
+Total Medium Vulnerabilities: 0
+Total Low Vulnerabilities: 0
+Total Issues Found: 0
+================================================================================
 
-[4/4] Searching for email-password combinations
+Report saved to: secret_audit_report_20260426_071245.txt
 
-======================================================================
-BREACH-MAPPING REPORT
-======================================================================
-
-Target: +919849257983
-
-Total Credentials Found: 0
-
-Total Passwords Found: 0
-
-Emails Identified: 0
-
-Addresses Found: 0
-
-Public Gists/References: 0
-
-======================================================================
-UNFILTERED EXPOSURE ANALYSIS
-======================================================================
-RESULT: ZERO EXPOSURE DETECTED
-  - No credentials found
-  - No passwords leaked
-  - No addresses exposed
-  - No email-password combinations
-  - Phone number is PROTECTED from credential leaks
-
-======================================================================
-FINAL CONCLUSION
-======================================================================
-BREACH POSTURE: CLEAN
-  Phone +919849257983 has NO presence in public credential dumps
-  Privacy integrity: MAINTAINED
-
-FULL JSON: {'phone': '+919849257983', 'credentials': [], 'emails_found': [], 'passwords': [], 'addresses': [], 'private_metadata': []}
-
-BREACH-MAPPING complete
+SUMMARY:
+  - Repositories scanned: 0
+  - Critical vulnerabilities: 0
+  - Medium vulnerabilities: 0
+  - Low vulnerabilities: 0
