@@ -6,65 +6,72 @@ Requirement already satisfied: idna<4,>=2.5 in /opt/hostedtoolcache/Python/3.14.
 Requirement already satisfied: urllib3<3,>=1.26 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2.6.3)
 Requirement already satisfied: certifi>=2023.5.7 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2026.4.22)
 Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 149.5 MB/s  0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 24.7 MB/s  0:00:00
 Installing collected packages: phonenumbers
 Successfully installed phonenumbers-9.0.29
 ============================================================
-PULSE-SCAN: Active Platform Detection
+IDENTITY-STRIKE: UPI Handle Identity Resolution
 ============================================================
 Target: +919849257983
-Checking live platform registrations...
+Resolving legal/display names from UPI handles...
 
-Number Analysis:
-  Country: IN
-  Format: E.164 = +919849257983
-  Clean: 9849257983
-
-[1/4] Checking UPI Payment Handles...
+[1/4] Checking UPI payment handles for identity data...
   Checking: 9849257983@paytm
-    Format valid: True
+    Error: name 'requests' is not defined
   Checking: 9849257983@ybl
-    Format valid: True
-  Checking: 9849257983@gpay
-    Format valid: True
-  Checking: 9849257983@phonepay
-    Format valid: True
-  Checking: 9849257983@upi
-    Format valid: True
-  Checking: 9849257983@hdfcbank
-    Format valid: True
+    Error: name 'requests' is not defined
   Checking: 9849257983@oksbi
-    Format valid: True
-  Found 7 potential UPI handles
+    Error: name 'requests' is not defined
+  Checking: 9849257983@gpay
+    Error: name 'requests' is not defined
+  Checking: 9849257983@phonepay
+    Error: name 'requests' is not defined
 
-[2/4] Checking WhatsApp Registration...
-  Target: +919849257983
-  Method: API unavailable (requires WhatsApp Business API)
-  Note: WhatsApp Privacy - No public verification available
+[2/4] Searching public profiles and metadata...
+  Profile dork 1/3
+    Error: name 'requests' is not defined
+  Profile dork 2/3
+    Error: name 'requests' is not defined
+  Profile dork 3/3
+    Error: name 'requests' is not defined
 
-[3/4] Checking Telegram Registration...
-  Target: +919849257983
-  Method: API unavailable (requires Bot API)
-  Note: Telegram Privacy - Number visibility requires user consent
+[3/4] Searching messaging platform public profiles...
+  WhatsApp: No public API - Only shows if user set to allow contacts to see number
+  Telegram: No public API - Only shows in public channels/groups if user joined
+  Signal: No public API - End-to-end encrypted, no metadata exposed
 
-[4/4] Checking Signal Registration...
-  Target: +919849257983
-  Method: API unavailable (Signal does not expose verification)
-  Note: Signal Privacy - No public number lookup
+[4/4] Compiling Identity Dossier...
 
 ============================================================
-PULSE-SCAN COMPLETE
+IDENTITY DOSSIER COMPILED
 ============================================================
 
-SUMMARY OF FINDINGS:
-- UPI Handles Available: 7 potential handles
-- WhatsApp: Not publicly verifiable (privacy-protected)
-- Telegram: Not publicly verifiable (privacy-protected)
-- Signal: Not publicly verifiable (privacy-protected)
+Phone Number: +919849257983
+UPI Handles Attempted: 5
+Dorks Executed: 3
 
-PRIVACY NOTE:
-Messaging platforms like WhatsApp, Telegram, and Signal
-do not expose registration status publicly for privacy reasons.
-Direct verification would require phone-based OTP verification.
+IDENTITY RESULTS:
+----------------------------------------
+  9849257983@paytm: NOT PUBLICLY VERIFIABLE
+  9849257983@ybl: NOT PUBLICLY VERIFIABLE
+  9849257983@oksbi: NOT PUBLICLY VERIFIABLE
+  9849257983@gpay: NOT PUBLICLY VERIFIABLE
+  9849257983@phonepay: NOT PUBLICLY VERIFIABLE
 
-Results saved to result.txt
+PUBLIC PROFILES:
+----------------------------------------
+  whatsapp: NOT PUBLIC (privacy-protected)
+  telegram: NOT PUBLIC (privacy-protected)
+  signal: NOT PUBLIC (privacy-protected)
+
+============================================================
+PRIVACY NOTICE:
+============================================================
+UPI payment systems (IMPS, NEFT, BHIM) do NOT publicly
+expose account holder names for privacy and security.
+Direct identity lookup would require:
+  - Official bank verification (not public)
+  - Law enforcement request
+  - Account holder consent
+
+Identity dossier saved to result.txt
