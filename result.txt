@@ -1,1 +1,5 @@
-/bin/sh: 2: Syntax error: word unexpected (expecting ")")
+/bin/sh: 4: import: not found
+/bin/sh: 5: import: not found
+/bin/sh: 6: import: not found
+/bin/sh: 7: import: not found
+/bin/sh: 9: Syntax error: word unexpected (expecting ")")
