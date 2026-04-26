@@ -28,15 +28,38 @@ def post_result(output):
     data = {"message": "Update result", "content": base64.b64encode(output.encode()).decode(), "sha": sha}
     requests.put(url, headers=HEADERS, json=data)
 
-# Check if --once flag is present
+def execute_task(task):
+    """Execute a task, handling both Python scripts with shebang and shell scripts."""
+    task_stripped = task.strip()
+    
+    # Check if task starts with Python shebang
+    if task_stripped.startswith('#!/usr/bin/env python3'):
+        # Extract Python code by removing the shebang line
+        lines = task_stripped.split('\n', 1)
+        if len(lines) > 1:
+            python_code = lines[1].strip()
+        else:
+            python_code = ''
+        
+        # Execute Python code using python3 -c
+        print("Detected Python script with shebang, executing with python3 -c")
+        res = subprocess.run(['python3', '-c', python_code], capture_output=True, text=True)
+        return res.stdout + res.stderr
+    else:
+        # Treat as shell script
+        print("Detected shell script, executing with shell=True")
+        res = subprocess.run(task, shell=True, capture_output=True, text=True)
+        return res.stdout + res.stderr
+
+# Check if --onece flag is present
 if '--once' in sys.argv:
     print("Single-task mode enabled (--once flag)")
     print("Polling for tasks...")
     task, sha = get_task()
     if task and task.strip():
         print(f"Executing task: {task}")
-        res = subprocess.run(task, shell=True, capture_output=True, text=True)
-        post_result(res.stdout + res.stderr)
+        result = execute_task(task)
+        post_result(result)
         print("Cleaning up task...")
         requests.delete(f"https://api.github.com/repos/{REPO}/contents/task.txt", headers=HEADERS, json={"message": "Done", "sha": sha})
 else:
@@ -46,8 +69,8 @@ else:
         task, sha = get_task()
         if task and task.strip():
             print(f"Executing task: {task}")
-            res = subprocess.run(task, shell=True, capture_output=True, text=True)
-            post_result(res.stdout + res.stderr)
+            result = execute_task(task)
+            post_result(result)
             print("Cleaning up task...")
             requests.delete(f"https://api.github.com/repos/{REPO}/contents/task.txt", headers=HEADERS, json={"message": "Done", "sha": sha})
         time.sleep(30)
