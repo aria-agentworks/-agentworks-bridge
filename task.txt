@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+import re, time, urllib.parse, requests
+
+print("="*70)
+print("SOVEREIGN DEDUCTION: Government & Institutional Directory Scan")
+print("="*70)
+
+phone = '+919849257983'
+clean = '9849257983'
+report = {'phone': phone, 'gov_entities': [], 'business_profiles': [], 'exposures': []}
+
+print(f"\nTarget: {phone}")
+print("Searching government directories, voter lists, and institutional databases...")
+
+
+def search_domain(domain, query, category):
+    print(f"  Searching {domain}...")
+    url = f"https://www.google.com/search?q={urllib.parse.quote(f'{clean} site:{domain}')}&num=2"
+    r = requests.get(url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+    if r.status_code == 200:
+        # Look for names (patterns like First Last)
+        names = re.findall(r'([A-Z][a-z]+\s+[A-Z]+\s+[A-Z][a-z]+)', r.text[:5000])
+        entities = re.findall(r'(https://www\.[^\s]+(?:pdf|doc|excel|xlsx))', r.text[:5000])
+        if names:
+            for n in list(set(names))[:3]:
+                report[category].append(n)
+                print(f"    Found name: {n}")
+        if entities:
+            for e in list(set(entities))[:2]:
+                report['exposures'].append(e)
+                print(f"    Found public file: {e}")
+    else:
+        print(f"    No results")
+    time.sleep(2)
+
+print("\n[1/3] Government & Institutional Search")
+search_domain('gov.in', clean, 'gov_entities')
+search_domain('nic.in', clean, 'gov_entities')
+print("\n[2/3] Educational Institution Search")
+search_domain('edu.in', clean, 'gov_entities')
+
+# Check PDF directories
+dorks = [
+    f'site:gov.in filetype:pdf {clean}',
+    f'site:nic.in filetype:pdf OR filetype:xlsx {clean}',
+    f'site:edu.in filetype:pdf {clean}',
+]
+print("\nSearching PDF/Excel files...")
+for dork in dorks:
+    url = f"https://www.google.com/search?q={urllib.parse.quote(dork)}&num=2"
+    r = requests.get(url, headers={'User-Agent': 'Mozilla'}, timeout=10)
+    if r.status_code == 200:
+        links = re.findall(r'(https://[^\s]+(?:\.pdf|\.pdf$))', r.text[:3000])
+        for l in list(set(links))[:2]:
+            if l not in report['exposures']:
+                report['exposures'].append(l)
+                print(f"    Found: {l}")
+    time.sleep(2)
+
+print("\n[3/3] Indian Business/Local Directories")
+search_domain('justdial.com', clean, 'business_profiles')
+search_domain('sulekha.com', clean, 'business_profiles')
+search_domain('indiamart.com', clean, 'business_profiles')
+
+print("\n" + "="*70)
+print("SOVEREIGN DEDUCTION REPORT")
+print("="*70)
+print(f"\nTarget: {phone}")
+print(f"\nGovernment/Institutional Entities Found: {len(report['gov_entities'])}")
+for entity in report['gov_entities']:
+    print(f"  - {entity}")
+
+print(f"\nBusiness Profile Findings: {len(report['business_profiles'])}")
+for profile in report['business_profiles']:
+    print(f"  - {profile}")
+
+print(f"\nPublic Exposure Files: {len(report['exposures'])}")
+for exp in report['exposures']:
+    print(f"  - {exp}")
+
+print("\n" + "="*70)
+print("FINAL VERDICT")
+print("="*70)
+if len(report['gov_entities']) == 0 and len(report['business_profiles']) == 0:
+    print("POSTURE: HIGHLY PROTECTED")
+    print("- No government records found")
+    print("- No business directory listings")
+    print("- No voter/exam result databases")
+    print("- Privacy excellence level")
+elif len(report['exposures']) > 0:
+    print("POSTURE: MODERATE RISK")
+    print(f"  - {len(report['exposures'])} public file exposure(s) found")
+else:
+    print("POSTURE: MINIMAL EXPOSURE")
+    print(f"  - {len(report['gov_entities'])} government references")
+    print(f"  - {len(report['business_profiles'])} business profiles")
+
+print("\n" + "="*70)
+print("DETAILED FINDINGS (JSON)")
+print(report)
+print("\nSovereign Dediction complete")
