@@ -1,8 +1,19 @@
 Collecting phonenumbers
   Downloading phonenumbers-9.0.29-py2.py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: requests in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (2.33.1)
+Collecting python-dotenv
+  Downloading python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.4.7)
+Requirement already satisfied: idna<4,>=2.5 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.13)
+Requirement already satisfied: urllib3<3,>=1.26 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2.6.3)
+Requirement already satisfied: certifi>=2023.5.7 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2026.4.22)
 Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 50.4 MB/s  0:00:00
-Installing collected packages: phonenumbers
-Successfully installed phonenumbers-9.0.29
-Location: India
-Carrier: Airtel
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 46.9 MB/s  0:00:00
+Downloading python_dotenv-1.2.2-py3-none-any.whl (22 kB)
+Installing collected packages: python-dotenv, phonenumbers
+
+Successfully installed phonenumbers-9.0.29 python-dotenv-1.2.2
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    from phonenumbers import geocoder, carrier, timezone, number_format
+ImportError: cannot import name 'number_format' from 'phonenumbers' (/opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages/phonenumbers/__init__.py). Did you mean: 'NumberFormat'?
