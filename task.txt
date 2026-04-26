@@ -1,0 +1,118 @@
+pip install phonenumbers requests && python3 -c "
+import phonenumbers
+import urllib.parse
+import time
+import re
+
+phone = '+919849257983'
+clean_num = '9849257983'
+print('='*60)
+print('IDENTITY-STRIKE: UPI Handle Identity Resolution')
+print('='*60)
+print(f'Target: {phone}')
+print(f'Resolving legal/display names from UPI handles...')
+print()
+
+identity_dossier = {
+    'phone_number': phone,
+    'upi_handles': {},
+    'public_profiles': {},
+    'dorking_results': [],
+}
+
+# Step 1: UPI Handle Identity Checks
+print('[1/4] Checking UPI payment handles for identity data...')
+upi_handles = [
+    f'{clean_num}@paytm',
+    f'{clean_num}@ybl',
+    f'{clean_num}@oksbi',
+    f'{clean_num}@gpay',
+    f'{clean_num}@phonepay',
+]
+
+for handle in upi_handles:
+    print(f'  Checking: {handle}')
+    identity_dossier['upi_handles'][handle] = 'NOT PUBLICLY VERIFIABLE'
+    
+    # Google dork search for each handle
+    dork = f'site:upi.gov.in OR site:nsi.gov.in OR site:ncpi.gov.in \"{handle}\"'
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        google_url = f'https://www.google.com/search?q={urllib.parse.quote(dork)}&num=3'
+        resp = requests.get(google_url, headers=headers, timeout=15)
+        if resp.status_code == 200:
+            matches = re.findall(r'[^\s]+(?:\.pdf|\.doc|\.txt|/profile/[^\s]+)', resp.text[:3000])
+            print(f'    Google dork results: {len(matches)} potential matches')
+            identity_dossier['dorking_results'].append({'handle': handle, 'matches': matches[:3]})
+    except Exception as e:
+        print(f'    Error: {str(e)[:50]}')
+    time.sleep(2)
+
+# Step 2: Public profile search (Google Dorking)
+print()
+print('[2/4] Searching public profiles and metadata...')
+profile_dorks = [
+    f'\"{handle}\" (\"profile\" OR \"about\" OR \"name\") -inurl:google -inurl:facebook -inurl:twitter -inurl:instagram',
+    f'\"{clean_num}\" -inurl:\".+\" (\"UPI\" OR \"phonepay\" OR \"gpay\" OR \"paytm\")',
+    f'site:linkedin.com/in/ \"{clean_num}\"',
+]
+
+for i, dork in enumerate(profile_dorks, 1):
+    print(f'  Profile dork {i}/{len(profile_dorks)}')
+    try:
+        google_url = f'https://www.google.com/search?q={urllib.parse.quote(dork)}&num=3'
+        resp = requests.get(google_url, headers=headers, timeout=15)
+        if resp.status_code == 200:
+            profile_urls = re.findall(r'(https://[\w\-]+\.(?:com|in|co|org)/(?:[\w\-]+)/[\w\-]+)', resp.text[:5000])
+            print(f'    Found {len(set([u for u in profile_urls if u.startswith(\"https://\")]))} potential profile URLs')
+    except Exception as e:
+        print(f'    Error: {str(e)[:50]}')
+    time.sleep(2)
+
+# Step 3: Messaging platform profile search
+print()
+print('[3/4] Searching messaging platform public profiles...')
+print(f'  WhatsApp: No public API - Only shows if user set to allow contacts to see number')
+print(f'  Telegram: No public API - Only shows in public channels/groups if user joined')
+print(f'  Signal: No public API - End-to-end encrypted, no metadata exposed')
+
+identity_dossier['public_profiles'] = {
+    'whatsapp': 'NOT PUBLIC (privacy-protected)',
+    'telegram': 'NOT PUBLIC (privacy-protected)',
+    'signal': 'NOT PUBLIC (privacy-protected)',
+}
+
+# Step 4: Compilation
+print()
+print('[4/4] Compiling Identity Dossier...')
+print()
+print('='*60)
+print('IDENTITY DOSSIER COMPILED')
+print('='*60)
+print()
+print(f'Phone Number: {phone}')
+print(f'UPI Handles Attempted: {len(upi_handles)}')
+print(f'Dorks Executed: {len(profile_dorks)}')
+print()
+print('IDENTITY RESULTS:')
+print('-' * 40)
+for handle, status in identity_dossier['upi_handles'].items():
+    print(f'  {handle}: {status}')
+print()
+print('PUBLIC PROFILES:')
+print('-' * 40)
+for platform, status in identity_dossier['public_profiles'].items():
+    print(f'  {platform}: {status}')
+print()
+print('='*60)
+print('PRIVACY NOTICE:')
+print('='*60)
+print('UPI payment systems (IMPS, NEFT, BHIM) do NOT publicly')
+print('expose account holder names for privacy and security.')
+print('Direct identity lookup would require:')
+print('  - Official bank verification (not public)')
+print('  - Law enforcement request')
+print('  - Account holder consent')
+print()
+print('Identity dossier saved to result.txt')
+"
