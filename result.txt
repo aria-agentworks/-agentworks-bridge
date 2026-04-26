@@ -1,9 +1,70 @@
+Collecting phonenumbers
+  Downloading phonenumbers-9.0.29-py2.py3-none-any.whl.metadata (10 kB)
 Requirement already satisfied: requests in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (2.33.1)
 Requirement already satisfied: charset_normalizer<4,>=2 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.4.7)
 Requirement already satisfied: idna<4,>=2.5 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (3.13)
 Requirement already satisfied: urllib3<3,>=1.26 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2.6.3)
 Requirement already satisfied: certifi>=2023.5.7 in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from requests) (2026.4.22)
-  File "<string>", line 59
-    ]
-    ^
-SyntaxError: unmatched ']'
+Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 149.5 MB/s  0:00:00
+Installing collected packages: phonenumbers
+Successfully installed phonenumbers-9.0.29
+============================================================
+PULSE-SCAN: Active Platform Detection
+============================================================
+Target: +919849257983
+Checking live platform registrations...
+
+Number Analysis:
+  Country: IN
+  Format: E.164 = +919849257983
+  Clean: 9849257983
+
+[1/4] Checking UPI Payment Handles...
+  Checking: 9849257983@paytm
+    Format valid: True
+  Checking: 9849257983@ybl
+    Format valid: True
+  Checking: 9849257983@gpay
+    Format valid: True
+  Checking: 9849257983@phonepay
+    Format valid: True
+  Checking: 9849257983@upi
+    Format valid: True
+  Checking: 9849257983@hdfcbank
+    Format valid: True
+  Checking: 9849257983@oksbi
+    Format valid: True
+  Found 7 potential UPI handles
+
+[2/4] Checking WhatsApp Registration...
+  Target: +919849257983
+  Method: API unavailable (requires WhatsApp Business API)
+  Note: WhatsApp Privacy - No public verification available
+
+[3/4] Checking Telegram Registration...
+  Target: +919849257983
+  Method: API unavailable (requires Bot API)
+  Note: Telegram Privacy - Number visibility requires user consent
+
+[4/4] Checking Signal Registration...
+  Target: +919849257983
+  Method: API unavailable (Signal does not expose verification)
+  Note: Signal Privacy - No public number lookup
+
+============================================================
+PULSE-SCAN COMPLETE
+============================================================
+
+SUMMARY OF FINDINGS:
+- UPI Handles Available: 7 potential handles
+- WhatsApp: Not publicly verifiable (privacy-protected)
+- Telegram: Not publicly verifiable (privacy-protected)
+- Signal: Not publicly verifiable (privacy-protected)
+
+PRIVACY NOTE:
+Messaging platforms like WhatsApp, Telegram, and Signal
+do not expose registration status publicly for privacy reasons.
+Direct verification would require phone-based OTP verification.
+
+Results saved to result.txt
