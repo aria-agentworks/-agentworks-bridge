@@ -1,2 +1,8 @@
-Actions Bridge Active
-/bin/sh: 1: nmap: not found
+Collecting phonenumbers
+  Downloading phonenumbers-9.0.29-py2.py3-none-any.whl.metadata (10 kB)
+Downloading phonenumbers-9.0.29-py2.py3-none-any.whl (2.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.6/2.6 MB 50.4 MB/s  0:00:00
+Installing collected packages: phonenumbers
+Successfully installed phonenumbers-9.0.29
+Location: India
+Carrier: Airtel
