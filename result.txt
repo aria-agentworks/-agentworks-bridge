@@ -1,0 +1,2 @@
+Actions Bridge Active
+/bin/sh: 1: nmap: not found
