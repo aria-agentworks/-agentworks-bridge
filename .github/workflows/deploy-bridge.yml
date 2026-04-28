@@ -9,8 +9,8 @@ on:
         default: 'eastus'
         type: choice
         options:
-        - eastus
-        - centralindia
+          - eastus
+          - centralindia
   push:
     branches:
       - main
@@ -51,77 +51,32 @@ jobs:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: Deploy VM
+      - name: Deploy VM with Cloud-Init
         uses: azure/CLI@v2
         with:
           inlineScript: |
             az vm create \
-              --name ${{ env.AZURE_VM_NAME }} \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --name ${{ env.AZURE_VM_NAME }} \
               --image Ubuntu2204 \
-              --vm-size Standard_B1s \
+              --size Standard_B1s \
               --admin-username azureuser \
               --generate-ssh-keys \
-              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
+              --custom-data cloudinit.yml
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-      - name: Configure VM for Command Execution
+      - name: Wait and Get Public IP
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            # Get VM details for SSH access
-            VM_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicInternetFqdns -o tsv || az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query networkProfile.networkInterfaces[0].publicIpAddresses[0].ipAddress -o tsv)
-            echo "VM IP: $VM_IP"
-            echo "vm_ip=$VM_IP" >> $GITHUB_OUTPUT
-        id: vm-details
-
-      - name: Execute Commands on VM via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ steps.vm-details.outputs.vm_ip }}
-          username: azureuser
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Update system
-            echo "=== Updating system packages ==="
-            apt-get update
-            apt-get upgrade -y
-
-            # Install Docker
-            echo "=== Installing Docker ==="
-            curl -fsSL https://get.docker.com | sh
-
-            # Start and enable Docker service
-            echo "=== Starting Docker service ==="
-            systemctl start docker
-            systemctl enable docker
-
-            # Verify Docker Compose is available (built-in)
-            echo "=== Verifying Docker Compose ==="
-            docker compose version
-
-            # Deploy n8n
-            echo "=== Deploying n8n ==="
-            docker run -d \
-              --name n8n \
-              -p 5678:5678 \
-              -v n8n_data:/home/node/.n8n \
-              n8nio/n8n
-
-            # Show running containers
-            echo "=== Running Containers ==="
-            docker ps
-
-      - name: Get Public IP
-        id: get-ip
-        uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIpAddresses -o tsv)
+            # Wait for VM to be ready
+            az vm wait --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --created
+            # Get public IP and output it
+            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o tsv)
             echo "VM Public IP: $PUBLIC_IP"
             echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
         env:
@@ -143,37 +98,37 @@ jobs:
             echo "Workflow failed, attempting cleanup..."
             echo "Keeping Resource Group: ${{ env.AZURE_RESOURCE_GROUP }} and VM: ${{ env.AZURE_VM_NAME }} for debugging"
             echo "To clean up manually, use:"
-            echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} --yes"
+            echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} -yes"
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
-  cleanup-on-success:
-    needs: deploy-vm
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+cleanup-on-success:
+  needs: deploy-vm
+  runs-on: ubuntu-latest
+  if: always()
+  steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
-      - name: Cleanup Resources
-        uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            echo "Cleaning up resources..."
-            az group delete \
-              --name ${{ env.AZURE_RESOURCE_GROUP }} \
-              --yes \
-              --no-wait
-        env:
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    - name: Cleanup Resources
+      uses: azure/CLI@v2
+      with:
+        inlineScript: |
+          echo "Cleaning up resources..."
+          az group delete \
+            --name ${{ env.AZURE_RESOURCE_GROUP }} \
+            --yes \
+            --no-wait
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

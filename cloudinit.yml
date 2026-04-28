@@ -1,0 +1,21 @@
+#cloud-init
+packages:
+  - docker.io
+  - docker-compose
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+
+runcmd:
+  - systemctl start docker
+  - systemctl enable docker
+  - docker pull n8nio/n8n
+  - docker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n n8nio/n8n
+  - echo "n8n deployment complete"
+
+write_files:
+  - path: /etc/cloud/cloud-init.disabled
+    content: "true"
+    append: false
