@@ -17,7 +17,7 @@ on:
       - main
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  FORKED_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   AZURE_RESOURCE_GROUP: bridge-rg-${{ github.run_id }}
   AZURE_VM_NAME: bridge-vm-${{ github.run_id }}
   AZURE_LOCATION: ${{ github.event.inputs.region || 'eastus' }}
@@ -49,21 +49,41 @@ jobs:
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            az vm create \
-              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-              --name ${{ env.AZURE_VM_NAME }} \
-              --image Ubuntu2204 \
-              --size Standard_B1s \
-              --admin-username azureuser \
-              --generate-ssh-keys \
-              --custom-data cloudinit.yaml
+            # Retry loop for VM creation to avoid Azure CLI hang
+            for i in {1..3}; do
+              echo "Attempting VM creation (attempt $i/3)..."
+              az vm create \
+                --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+                --name ${{ env.AZURE_VM_NAME }} \
+                --image Ubuntu2204 \
+                --size Standard_B1s \
+                --admin-username azureuser \
+                --generate-ssh-keys \
+                --custom-data cloudinit.yml \
+                --no-wait
+              
+              if [ $? -eq 0 ]; then
+                echo "VM creation command sent successfully"
+                break
+              else
+                echo "Attempt $i failed, retrying in 30 seconds..."
+                sleep 30
+              fi
+            done
 
-      - name: Wait and Get Public IP
+      - name: Wait for VM
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            echo "Waiting for VM to be ready..."
+            az vm wait --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --created --timeout 600
+            echo "VM is ready!"
+
+      - name: Get Public IP
         id: get-ip
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            az vm wait --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --created --timeout 300
             PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o tsv)
             echo "VM Public IP: $PUBLIC_IP"
             echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
@@ -74,7 +94,7 @@ jobs:
           echo "n8n URL: http://${{ steps.get-ip.outputs.public-ip }}:5678"
 
       - name: Cleanup on Failure
-        if: failure()
+        if: failure() || cancelled()
         uses: azure/CLI@v2
         with:
           inlineScript: |
