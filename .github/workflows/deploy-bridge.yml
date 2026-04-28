@@ -1,0 +1,179 @@
+name: Deploy Bridge VM with n8n
+
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Azure region (eastus or centralindia)'
+        required: false
+        default: 'eastus'
+        type: choice
+        options:
+        - eastus
+        - centralindia
+  push:
+    branches:
+      - main
+
+env:
+  AZURE_RESOURCE_GROUP: bridge-rg-${{ github.run_id }}
+  AZURE_VM_NAME: bridge-vm-${{ github.run_id }}
+  AZURE_REGION: '${{ github.event.inputs.region || 'eastus' }}'
+
+jobs:
+  deploy-vm:
+    runs-on: ubuntu-latest
+    outputs:
+      vm-public-ip: ${{ steps.get-ip.outputs.public-ip }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Create Resource Group
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az group create \
+              --name ${{ env.AZURE_RESOURCE_GROUP }} \
+              --location ${{ env.AZURE_REGION }} \
+              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}" "Environment=Bridge"
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Deploy VM
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            az vm create \
+              --name ${{ env.AZURE_VM_NAME }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --image Ubuntu2204 \
+              --vm-size Standard_B1s \
+              --admin-username azureuser \
+              --generate-ssh-keys \
+              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Configure VM for Command Execution
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            # Get VM details for SSH access
+            VM_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicInternetFqdns -o tsv || az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query networkProfile.networkInterfaces[0].publicIpAddresses[0].ipAddress -o tsv)
+            echo "VM IP: $VM_IP"
+            echo "vm_ip=$VM_IP" >> $GITHUB_OUTPUT
+        id: vm-details
+
+      - name: Execute Commands on VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ steps.vm-details.outputs.vm_ip }}
+          username: azureuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Update system
+            echo "=== Updating system packages ==="
+            apt-get update
+            apt-get upgrade -y
+
+            # Install Docker
+            echo "=== Installing Docker ==="
+            curl -fsSL https://get.docker.com | sh
+
+            # Start and enable Docker service
+            echo "=== Starting Docker service ==="
+            systemctl start docker
+            systemctl enable docker
+
+            # Verify Docker Compose is available (built-in)
+            echo "=== Verifying Docker Compose ==="
+            docker compose version
+
+            # Deploy n8n
+            echo "=== Deploying n8n ==="
+            docker run -d \
+              --name n8n \
+              -p 5678:5678 \
+              -v n8n_data:/home/node/.n8n \
+              n8nio/n8n
+
+            # Show running containers
+            echo "=== Running Containers ==="
+            docker ps
+
+      - name: Get Public IP
+        id: get-ip
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIpAddresses -o tsv)
+            echo "VM Public IP: $PUBLIC_IP"
+            echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Output VM Information
+        run: |
+          echo "VM Public IP: ${{ steps.get-ip.outputs.public-ip }}"
+          echo "n8n URL: http://${{ steps.get-ip.outputs.public-ip }}:5678"
+
+      - name: Cleanup on Failure
+        if: failure()
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            echo "Workflow failed, attempting cleanup..."
+            echo "Keeping Resource Group: ${{ env.AZURE_RESOURCE_GROUP }} and VM: ${{ env.AZURE_VM_NAME }} for debugging"
+            echo "To clean up manually, use:"
+            echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} --yes"
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  cleanup-on-success:
+    needs: deploy-vm
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Cleanup Resources
+        uses: azure/CLI@v2
+        with:
+          inlineScript: |
+            echo "Cleaning up resources..."
+            az group delete \
+              --name ${{ env.AZURE_RESOURCE_GROUP }} \
+              --yes \
+              --no-wait
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
