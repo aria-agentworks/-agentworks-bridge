@@ -62,7 +62,7 @@ jobs:
               --size Standard_B1s \
               --admin-username azureuser \
               --generate-ssh-keys \
-              --custom-data cloud-init.yaml
+              --custom-data cloudinit.yml
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -98,7 +98,7 @@ jobs:
             echo "Workflow failed, attempting cleanup..."
             echo "Keeping Resource Group: ${{ env.AZURE_RESOURCE_GROUP }} and VM: ${{ env.AZURE_VM_NAME }} for debugging"
             echo "To clean up manually, use:"
-            echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} -yes"
+            echo "az group delete -n ${az group delete --yes ${{ env.AZURE_RESOURCE_GROUP }} --yes"
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -127,8 +127,8 @@ cleanup-on-success:
             --name ${{ env.AZURE_RESOURCE_GROUP }} \
             --yes \
             --no-wait
-      env:
-        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
