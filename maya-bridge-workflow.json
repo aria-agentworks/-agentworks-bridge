@@ -1,1 +1,102 @@
-{"name": "Mayabridge Relay - Save to Assets", "nodes": [{"parameters": {"httpMethod": "POST", "path": "maya", "responseMode": "onReceived", "options": {}}, "id": "1", "name": "Mayawebhook", "type": "n8n-nodes-base.webhook", "typeVersion": 1, "position": [460, 290]}, {"parameters": {"url": "={{ $json.image_url }}", "sendQuery": false, "sendHeaders": false, "sendBody": false, "options": {"response": {"responseFormat": "file"}}}, "id": "2", "name": "Download Image", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [680, 290]}, {"parameters": {"filepath": "/tmp/maya-assets/maya_latest.jpg", "options": {}}, "id": "3", "name": "Save to Assets", "type": "n8n-nodes-base writeFileBinaryFiles", "typeVersion": 1, "position": [900, 290]}, {"parameters": {"note": "Instagram Graph API placeholder - to be implemented later. Use /instagram/image endpoint to push to Instagram.", "text": "Instagram API Placeholder\n\nTo persist to Nginx volume, mount n8n container with: -v /var/www/html/maya-assets:/tmp/maya-assets\nOr adjust the filepath to a mounted volume\n\nFuture implementation:\n- Add HTTP Request node to call Instagram Graph API\n- Use Instagram API endpoint: /instagram/image\n- Authenticate using Instagram Access Token\n- Upload image with caption and metadata\n\nPlace this node as Node 4 if Instagram posting is needed."}, "id": "4", "name": "Instagram API Note", "type": "n8n-nodes-base.notes", "typeVersion": 1, "position": [1120, 290]}], "connections": {"Mayawebhook": {"main": [[{"node": "Download Image", "type": "main", "index": 0}]]}, "Download Image": {"main": [[{"node": "Save to Assets", "type": "main", "index": 0}]]}, "Save to Assets": {"main": []}}, "active": false, "settings": {"executionOrder": "v1"}, "versionId": "1", "meta": {"templateId": "1"}, "id": "maya-bridge-relay", "tags": []}
+{
+  "name": "Mayabridge Relay - Save to Nginx Assets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "maya",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "webhook-node",
+      "name": "Mayawebhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.image_url }}",
+        "options": {
+          "responseFormat": "file"
+        }
+      },
+      "id": "download-image-node",
+      "name": "Download Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "filepath": "/tmp/maya-assets/maya_latest.jpg",
+        "options": {}
+      },
+      "id": "save-files-node",
+      "name": "Save to Assets",
+      "type": "n8n-nodes-base.writeBinaryData",
+      "typeVersion": 1,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Placeholder for Instagram Graph API integration\n// Uncomment when API credentials are available:\n// return {\n//   json: {\n//     instagram_post: 'pending'\n//   }\n// };\n\nreturn [\n  {\n    json: {\n      message: 'Image saved to /tmp/maya-assets/maya_latest.jpg',\n      image_url: $json.download_url || 'local_file',\n      caption: $json.caption,\n      status: 'ready_for_instagram'\n    }\n  }\n];"
+      },
+      "id": "instagram-placeholder-node",
+      "name": "IG API Placeholder",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300]
+    }
+  ],
+  "connections": {
+    "Mayawebhook": {
+      "main": [
+        [
+          {
+            "node": "Download Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Image": {
+      "main": [
+        [
+          {
+            "node": "Save to Assets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Assets": {
+      "main": [
+        [
+          {
+            "node": "IG API Placeholder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IG API Placeholder": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "instanceId": "maya-bridge-relay"
+  },
+  "id": "maya-bridge-relay",
+  "tags": []
+}
