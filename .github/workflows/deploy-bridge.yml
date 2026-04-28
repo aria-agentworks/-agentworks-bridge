@@ -24,7 +24,7 @@ jobs:
   deploy-vm:
     runs-on: ubuntu-latest
     outputs:
-      vm-public-ip: ${{ steps.get-ip.outputs.public-ip }}
+      vm-public-ip: ${{ steps.wait_and_get_public_ip.outputs.public-ip }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
               --size Standard_B1s \
               --admin-username azureuser \
               --generate-ssh-keys \
-              --custom-data cloudinit.yml
+              --custom-data cloud-init.yml
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -87,8 +87,8 @@ jobs:
 
       - name: Output VM Information
         run: |
-          echo "VM Public IP: ${{ steps.get-ip.outputs.public-ip }}"
-          echo "n8n URL: http://${{ steps.get-ip.outputs.public-ip }}:5678"
+          echo "VM Public IP: ${{ steps.wait_and_get_public_ip.outputs.public-ip }}"
+          echo "n8n URL: http://${{ steps.wait_and_get_public_ip.outputs.public-ip }}:5678"
 
       - name: Cleanup on Failure
         if: failure()
@@ -98,7 +98,7 @@ jobs:
             echo "Workflow failed, attempting cleanup..."
             echo "Keeping Resource Group: ${{ env.AZURE_RESOURCE_GROUP }} and VM: ${{ env.AZURE_VM_NAME }} for debugging"
             echo "To clean up manually, use:"
-            echo "az group delete -n ${az group delete --yes ${{ env.AZURE_RESOURCE_GROUP }} --yes"
+            echo "az group delete -n ${az group delete --no-wait ${{ env.AZURE_RESOURCE_GROUP }}"
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
