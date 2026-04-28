@@ -60,7 +60,7 @@ jobs:
                 --size Standard_B1s \
                 --admin-password "AgentWorks123!" \
                 --authentication-type password \
-                --custom-data cloudinit.yml \
+                --custom-data cloudinit.yaml \
                 --location ${{ env.AZURE_LOCATION }} \
                 --no-wait
               if [ $? -eq 0 ]; then
