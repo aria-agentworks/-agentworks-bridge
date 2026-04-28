@@ -44,7 +44,7 @@ jobs:
             az group create \
               --name ${{ env.AZURE_RESOURCE_GROUP }} \
               --location ${{ env.AZURE_REGION }} \
-              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}" "Environment=Bridge"
+              --tags "CreatedBy=GitHubActions" "WorkflowId=${{ github.run_id }}" "Environment=Bridge"
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -62,7 +62,7 @@ jobs:
               --size Standard_B1s \
               --admin-username azureuser \
               --generate-ssh-keys \
-              --custom-data cloudinit.yml
+              --custom-data cloud-init.yaml
         env:
           AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -108,7 +108,7 @@ jobs:
 cleanup-on-success:
   needs: deploy-vm
   runs-on: ubuntu-latest
-  if: always()
+  if: success() || failure()
   steps:
     - name: Azure Login
       uses: azure/login@v1
