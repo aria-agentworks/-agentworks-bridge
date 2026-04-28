@@ -41,43 +41,22 @@ jobs:
         with:
           inlineScript: |
             az group create \
-                --name ${{ env.AZURE_RESOURCE_GROUP }} \
-                --location ${{ env.AZURE_LOCATION }} \
-                --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
+              --name ${{ env.AZURE_RESOURCE_GROUP }} \
+              --location ${{ env.AZURE_LOCATION }} \
+              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
 
       - name: Deploy VM (with debug)
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            set -x
-            for i in {1..3}; do
-                echo "Attempting VM creation (attempt $i/3)..."
-                az vm create \
-                    --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-                    --name ${{ env.AZURE_VM_NAME }} \
-                    --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts:latest \
-                    --size Standard_B1s \
-                    --admin-password "AgentWorks123!" \
-                    --authentication-type password \
-                    --custom-data cloudinit.yml \
-                    --location ${{ env.AZURE_LOCATION }} \
-                    --no-wait
-                if [ $? -eq 0 ]; then
-                    echo "VM creation command sent successfully"
-                    break
-                else
-                    echo "Attempt $i failed, retrying in 30 seconds..."
-                    sleep 30
-                fi
-            done
-
-      - name: Wait for VM
-        uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            echo "Waiting for VM to be ready..."
-            az vm wait --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --created --timeout 600
-            echo "VM is ready!"
+            az vm create \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --name ${{ env.AZURE_VM_NAME }} \
+              --image Ubuntu2204 \
+              --size Standard_B1s \
+              --admin-password "AgentWorks123!" \
+              --authentication-type password \
+              --location eastus
 
       - name: Get Public IP
         id: get-ip
