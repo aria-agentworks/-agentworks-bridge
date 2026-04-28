@@ -45,7 +45,7 @@ jobs:
               --location ${{ env.AZURE_LOCATION }} \
               --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
 
-      - name: Deploy VM (with debugging)
+      - name: Deploy VM (with debug)
         uses: azure/CLI@v2
         with:
           inlineScript: |
@@ -85,7 +85,7 @@ jobs:
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o ts)
+            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o tsv)
             echo "VM Public IP: $PUBLIC_IP"
             echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
 
@@ -103,19 +103,19 @@ jobs:
             echo "To clean up manually, use:"
             echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} --yes"
 
-  cleanup-on-success:
-    needs: deploy-vm
-    runs-on: ubuntu-latest
-    if: always()
-    steps:
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+cleanup-on-success:
+  needs: deploy-vm
+  runs-on: ubuntu-latest
+  if: always()
+  steps:
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Cleanup Resources
-        uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            echo "Cleaning up resources..."
-            az group delete --name ${{ env.AZURE_RESOURCE_GROUP }} --yes --no-wait
+    - name: Cleanup Resources
+      uses: azure/CLI@v2
+      with:
+        inlineScript: |
+          echo "Cleaning up resources..."
+          az group delete --name ${{ env.AZURE_RESOURCE_GROUP }} --yes --no-wait
