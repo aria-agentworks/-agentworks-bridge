@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       region:
-        description: 'Azure region (eastus, centralindia, or westeurope)'
-        required: false
-        default: 'eastus'
+        description: 'Azure Region'
+        required: true
+        default: 'centralindia'
         type: choice
         options:
           - eastus
@@ -17,7 +17,7 @@ on:
       - main
 
 env:
-  FORKED_JAVASCRIPT_ACTION_TO_NODE24: 'true'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   AZURE_RESOURCE_GROUP: bridge-rg-${{ github.run_id }}
   AZURE_VM_NAME: bridge-vm-${{ github.run_id }}
   AZURE_LOCATION: ${{ github.event.inputs.region || 'centralindia' }}
@@ -26,30 +26,19 @@ jobs:
   deploy-vm:
     runs-on: ubuntu-latest
     outputs:
-      vm-public-ip: ${{ steps.get-ip.outputs.public-ip }}
+      vm-public-ip: "${{ steps.get-ip.outputs.public-ip }}"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Create Resource Group
-        uses: azure/CLI@v2
-        with:
-          inlineScript: |
-            az group create \
-              --name ${{ env.AZURE_RESOURCE_GROUP }} \
-              --location ${{ env.AZURE_LOCATION }} \
-              --tags "CreatedBy=GitHubActions" "WorkflowID=${{ github.run_id }}"
-
-      - name: Deploy VM (with debug)
+      - name: Setup Infrastructure
         uses: azure/CLI@v2
         with:
           inlineScript: |
             az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_LOCATION }}
             az vm create \
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.AZURE_VM_NAME }} \
@@ -57,44 +46,24 @@ jobs:
               --size Standard_B1ls \
               --admin-password "AgentWorks@2026!" \
               --authentication-type password \
-              --location ${{ env.AZURE_LOCATION }}
-
+              --location ${{ env.AZURE_LOCATION }} \
+              --custom-data cloudinit.yml
       - name: Get Public IP
         id: get-ip
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o tsv)
-            echo "VM Public IP: $PUBLIC_IP"
+            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIcs -o tsv)
             echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
-
-      - name: Output VM Information
-        run: |
-          echo "VM Public IP: ${{ steps.get-ip.outputs.public-ip }}"
-          echo "n8n URL: http://${{ steps.get-ip.outputs.public-ip }}:5678"
-
-      - name: Cleanup on Failure
-        if: failure() || cancelled()
-        uses: azure/CLI@v2
+  cleanup-on-success:
+    needs: deploy-vm
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/CLI@v2
         with:
           inlineScript: |
-            echo "Workflow failed, keeping resources for debugging"
-            echo "To cleanup manually, use:"
-            echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} --yes"
-
-cleanup-on-success:
-  needs: deploy-vm
-  runs-on: ubuntu-latest
-  if: always()
-  steps:
-    - name: Login to Azure
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Cleanup Resources
-      uses: azure/CLI@v2
-      with:
-        inlineScript: |
-          echo "Cleaning up resources..."
-          az group delete --name ${{ env.AZURE_RESOURCE_GROUP }} --yes --no-wait
+            az group delete --name ${{ env.AZURE_RESOURCE_GROUP }} --yes --no-wait
