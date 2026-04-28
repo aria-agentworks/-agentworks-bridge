@@ -53,7 +53,7 @@ jobs:
         uses: azure/CLI@v2
         with:
           inlineScript: |
-            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIcs -o tsv)
+            PUBLIC_IP=$(az vm show --name ${{ env.AZURE_VM_NAME }} --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --show-details --query publicIps -o tsv)
             echo "public-ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
   cleanup-on-success:
     needs: deploy-vm
