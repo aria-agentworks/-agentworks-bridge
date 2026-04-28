@@ -17,10 +17,10 @@ on:
       - main
 
 env:
-  FORKED_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  FORKED_JAVASCRIPT_ACTION_TO_NODE24: 'true'
   AZURE_RESOURCE_GROUP: bridge-rg-${{ github.run_id }}
   AZURE_VM_NAME: bridge-vm-${{ github.run_id }}
-  AZURE_LOCATION: ${{ github.event.inputs.region || 'eastus' }}
+  AZURE_LOCATION: ${{ github.event.inputs.region || 'centralindia' }}
 
 jobs:
   deploy-vm:
@@ -56,7 +56,7 @@ jobs:
               --size Standard_B1s \
               --admin-password "AgentWorks123!" \
               --authentication-type password \
-              --location eastus
+              --location ${{ env.AZURE_LOCATION }}
 
       - name: Get Public IP
         id: get-ip
@@ -78,7 +78,7 @@ jobs:
         with:
           inlineScript: |
             echo "Workflow failed, keeping resources for debugging"
-            echo "To clean up manually, use:"
+            echo "To cleanup manually, use:"
             echo "az group delete -n ${{ env.AZURE_RESOURCE_GROUP }} --yes"
 
 cleanup-on-success:
