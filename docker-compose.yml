@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: brightbean-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: brightbean
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_change_in_prod}
+      POSTGRES_DB: brightbean_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - brightbean-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brightbean"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=brightbean_db
+      - DB_POSTGRESDB_USER=brightbean
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD:-secure_password_change_in_prod}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - brightbean-network
+
+  brightbean:
+    image: brightbeanxyz/brightbean-studio:latest
+    container_name: brightbean-studio
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://brightbean:secure_password_change_in_prod@postgres:5432/brightbean_db
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-change_this_in_production_123456}
+      - APP_ENV=${APP_ENV:-production}
+      - N8N_URL=${N8N_URL:-http://localhost:5678}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      n8n:
+        condition: service_started
+    networks:
+      - brightbean-network
+
+volumes:
+  postgres_data:
+    driver: local
+  n8n_data:
+    driver: local
+
+networks:
+  brightbean-network:
+    driver: bridge
