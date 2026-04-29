@@ -1,4 +1,3 @@
-#!/bin/bash
-echo "=== MINIMALIST HEARTBEAT SUCCESS $(date) ===" > result.txt
+echo "=== DIRECT BASH SUCCESS $(date) ===" > result.txt
 df -h / >> result.txt
-echo "=== TEST COMPLETE ===" >> result.txt
+echo "=== RUNNER FULLY VERIFIED ===" >> result.txt
