@@ -1,3 +1,1 @@
-/bin/sh: 1: import: not found
-/bin/sh: 2: import: not found
-/bin/sh: 4: Syntax error: word unexpected (expecting ")")
+ERROR: browser-harness not found
