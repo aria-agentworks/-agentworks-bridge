@@ -1,6 +1,5 @@
-# HEARTBEAT
-ls -la
-pwd
-echo "Heartbeat received at $(date)"
-echo "Disk usage: $(df -h / | tail -1)"
-echo "=== WORKER ONLINE AND RESPONDING ==="
+=== WORKER ONLINE TEST ===
+Timestamp: $(date -Iseconds)
+/usr/bin/pwd
+df -h /
+=== WORKER ONLINE ===
