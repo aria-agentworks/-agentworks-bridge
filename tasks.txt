@@ -1,6 +1,4 @@
 #!/bin/bash
-echo "=== WORKER VERIFICATION $(date +%s) ==="
-echo "Testing if task runner is responding"
-df -h / 2>/dev/null || echo "df failed"
-date
-echo "=== WORKER RESPONSIVE ==="
+echo "=== MINIMALIST HEARTBEAT SUCCESS $(date) ===" > result.txt
+df -h / >> result.txt
+echo "=== TEST COMPLETE ===" >> result.txt
