@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "=== WORKER ONLINE AND LISTENING ==="
+echo "=== FRESH START HEARTBEAT $(date +%s) ==="
 df -h /
-date
-echo "=== WORKER READY FOR DEPLOYMENT ==="
+echo "=== RUNNER IS ACTIVE ==="
