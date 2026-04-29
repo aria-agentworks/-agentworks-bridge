@@ -1,1 +1,4 @@
-echo '=== FINAL ATTEMPT DO BRIDGE ==='
+echo '=== GPT-PP-TEAM DEPLOYMENT START ==='
+echo 'TARGET: aria-ghost-droplet'
+echo 'IP: CHECK github for IP'
+echo 'PROTOCOL: @666.edu.kg TRIGGER'
