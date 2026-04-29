@@ -1,2 +1,2 @@
-Status: 401
-Response: Authorization is required!
+Status: 403
+Response: Authorization data is wrong!
