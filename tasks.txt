@@ -1,3 +1,5 @@
-echo "=== DIRECT BASH SUCCESS $(date) ===" > result.txt
-df -h / >> result.txt
-echo "=== RUNNER FULLY VERIFIED ===" >> result.txt
+echo "=== BASH EXECUTION SUCCESS $(date) ===" > result.txt
+
+df -h / >> result.txt 2>/dev/null || echo "df failed" >> result.txt
+
+echo "=== WORKER CONFIRMED ===" >> result.txt
