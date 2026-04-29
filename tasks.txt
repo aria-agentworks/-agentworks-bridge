@@ -1,14 +1,19 @@
-#!/usr/bin/env python3
-import urllib.request
-import json
-
-print('=== Maya Growth: Mission 01 (Version Check) ===')
-try:
-    with urllib.request.urlopen('http://127.0.0.1:9222/json/version', timeout=5) as resp:
-        data = resp.read().decode()
-        print(f'Chrome Version: {data[:100]}...')
-    print('=== STATUS 200 ===')
-    print('Mission Success!')
-except Exception as e:
-    print(f'Error: {e}')
-    print('=== STATUS 503 ===')
+#!/bin/bash
+set -e
+export DEBIAN_FRONTEND=noninteractive
+echo 'Installing system deps...'
+sudo DEBIAM_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-pip python3-venv xvfb libsqlite3-dev
+echo 'Installing Python ML and automation deps...'
+pip3 install --user torch transformers opencv-python-headless numpy playwright camoufox browserforge mitmproxy pybase64
+echo 'Installing browsers...'
+python3 -m playwright install firefox
+echo 'Installing GoSt...'
+sudo curl -sSL https://github.com/go-gost/gost/releases/latest/download/go-gost-linux-amd64 -o /usr/local/bin/go-gost && sudo chmod +x /usr/local/bin/go-gost
+echo 'Cloning repo...'
+rm -rf gpt-pp-team
+git clone https://github.com/DanOps-1/gpt-pp-team
+cd gpt-pp-team
+mkdir -p CTF-pay CTF-reg
+cp CTF-pay/config.paypal.example.json CTF-pay/config.paypal.json 2>/dev/null || echo 'Config file not found, creating example...'
+if [ -f CTF-reg/config.paypal-proxy.example.json ]; then cp CTF-reg/config.paypal-proxy.example.json CTF-reg/config.paypal-proxy.json; fi
+echo '=== DEPLOYMENT SUCCESS ==='
