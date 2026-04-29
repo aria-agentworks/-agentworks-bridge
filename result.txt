@@ -1,9 +1,5 @@
 === Maya Growth: Mission 01 (Remote Browser) ===
-=== Mission Test Complete ===
+ERROR: browser-harness not found
 
 [notice] A new release of pip is available: 26.0.1 -> 26.1
 [notice] To update, run: pip install --upgrade pip
-Traceback (most recent call last):
-  File "<string>", line 4, in <module>
-    from browser_harness.run import set_cdp_url, goto_url, page_info
-ModuleNotFoundError: No module named 'browser_harness.run'
