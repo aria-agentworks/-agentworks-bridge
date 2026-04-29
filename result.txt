@@ -1,4 +1,4 @@
-/bin/sh: 1: import: not found
-/bin/sh: 2: import: not found
-/bin/sh: 3: import: not found
-/bin/sh: 5: Syntax error: word unexpected (expecting ")")
+=== Maya Growth: Mission 01 (Direct Python) ===
+Checking Chrome CDP at http://127.0.0.1:9222...
+Error: HTTP Error 405: Method Not Allowed
+=== STATUS 503 ===
