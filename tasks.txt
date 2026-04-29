@@ -1,5 +1,8 @@
 #!/bin/bash
-echo "=== WORKER HEARTBEAT $(date) ==="
+echo "=== ROOT PARTITION CHECK ==="
 df -h /
-df -h /home
-echo "=== WORKER ONLINE ==="
+echo "=== DISK USAGE TOP 10 ==="
+du -sh /* 2>/dev/null | sort -h | tail -10
+echo "=== FREE SPACE BYTES ==="
+df -B1 / | tail -1 | awk '{print "Free: "$4" bytes"}'
+echo "=== WORKER CHECK COMPLETE ==="
