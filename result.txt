@@ -1,6 +1,9 @@
-=== Maya Growth: Mission 01 (Direct CDP) ===
-Installed cdp-use and browser-harness
+=== Maya Growth: Mission 01 (Remote Browser) ===
+=== Mission Test Complete ===
+
+[notice] A new release of pip is available: 26.0.1 -> 26.1
+[notice] To update, run: pip install --upgrade pip
 Traceback (most recent call last):
-  File "/home/runner/work/-agentworks-bridge/-agentworks-bridge/task_cdp.py", line 13, in <module>
-    from cdp_use import Browser
-ImportError: cannot import name 'Browser' from 'cdp_use' (/opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages/cdp_use/__init__.py)
+  File "<string>", line 4, in <module>
+    from browser_harness.run import set_cdp_url, goto_url, page_info
+ModuleNotFoundError: No module named 'browser_harness.run'
