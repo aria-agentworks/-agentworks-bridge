@@ -1,4 +1,2 @@
-#!/bin/bash
-echo "=== FRESH START HEARTBEAT $(date +%s) ==="
+echo "=== FINAL HEARTBEAT v3 $(date +%s) ==="
 df -h /
-echo "=== RUNNER IS ACTIVE ==="
