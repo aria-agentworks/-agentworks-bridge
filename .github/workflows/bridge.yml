@@ -1,4 +1,4 @@
-name: Strike Bridge
+name: Stride Bridge
 on:
   push:
     paths:
@@ -10,14 +10,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Check out repo
+      - name: Checkout repo
         uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Install dependencies
-        run: pip install requests
       - name: Run Bridge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
