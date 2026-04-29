@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+import subprocess
+import os
+import sys
+
+print("=== Maya Growth: Mission 01 (Remote Browser) ===")
+
+# Step 1: Ensure browser-harness is installed
+print("\n1. Installing browser-harness...")
+os.system('pip3 install -q browser-harness --break-system-packages')
+
+# Step 2: Find browser-harness
+print("\n2. Finding browser-harness binary...")
+
+# Method A: Try pip show
+try:
+    result = subprocess.run(['pip3', 'freeze'], capture_output=True, text=True, timeout=30)
+    if 'browser-harness' in result.stdout or 'browser_harness' in result.stdout:
+        print("✅ browser-harness is installed via pip")
+    else:
+        print("❌ browser-harness not found in pip packages")
+except:
+    pass
+
+# Method B: Try find command
+BH_PATH = None
+locations = ['/usr/local/bin', '/usr/bin', '/home/azureuser/.local/bin', '/opt/hostedtoolcache']
+for loc in locations:
+    try:
+        result = subprocess.run(['find', loc, '-name', 'browser-harness', '-type', 'f'], 
+                               capture_output=True, text=True, timeout=30)
+        if result.stdout and 'browser-harness' in result.stdout:
+            BH_PATH = result.stdout.strip().split('\n')[0]
+            print(f"✅ Found browser-harness at: {BH_PATH}")
+            break
+    except:
+        continue
+
+if not BH_PATH:
+    # Method C: Try python -m
+    print("\n3. Trying python module approach...")
+    try:
+        result = subprocess.run(['python3', '-c', 'import browser_harness; print(browser_harness.__version__)'],
+                               capture_output=True, text=True, timeout=30)
+        if result.returncode == 0:
+            print("✅ browser_harness module imported successfully")
+            print(f"Version: {result.stdout.strip()}")
+            # Use subprocess to call browser-harness CLI
+            print("\n4. Running remote browser test via CLI...")
+            cmd = '''python3 -c "from browser_harness.cli import harness; h = harness(); h.set_cdp_url('http://4.213.114.95:9222'); h.goto_url('https://www.instagram.com/natural_beauty_shoutout/'); import time; time.sleep(5); print(h.page_info())"'''
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
+            print("\n=== Remote Browser Test Result ===")
+            print(result.stdout)
+            if result.stderr:
+                print("Errors:", result.stderr)
+        else:
+            print(f"❌ Import failed: {result.stderr}")
+    except Exception as e:
+        print(f"❌ Module approach failed: {e}")
+else:
+    # Method D: Use found binary
+    print(f"\n3. Running remote browser test with {BH_PATH}-c...")
+    cmd = f"{BH_PATH} -c \"set_cdp_url('http://4.213.114.95:9222'); goto_url('https://www.instagram.com/natural_beauty_shoutout/'); import time; time.sleep(5); print(page_info())\""
+    print(f"Executing: {cmd}")
+    try:
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
+        print("\n=== Remote Browser Test Result ===")
+        print("STDOUT:")
+        print(result.stdout)
+        if result.stderr:
+            print("STDERR:")
+            print(result.stderr)
+    except Exception as e:
+        print(f"Error executing command: {e}")
+
+print("\n=== Mission Test Complete ===")
