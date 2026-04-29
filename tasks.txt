@@ -1,1 +1,1 @@
-echo '=== TRIGGER DO BRIDGE v2 ==='
+echo '=== FINAL ATTEMPT DO BRIDGE ==='
