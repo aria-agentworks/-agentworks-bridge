@@ -1,4 +1,4 @@
-name: Deploy Bridge VM with n8n
+name: Deploy Bridge VM with n8l
 
 on:
   workflow_dispatch:
@@ -12,9 +12,6 @@ on:
           - eastus
           - centralindia
           - westeurope
-  push:
-    branches:
-      - main
 
 env:
   FORCEF_JAVASCRIPT_ACTIONS_TO_NODE2: 'true'
@@ -43,11 +40,11 @@ jobs:
               --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
               --name ${{ env.AZURE_VM_NAME }} \
               --image Ubuntu2204 \
-              --size Standard_B1ls \
+              --size Standard_B1s \
               --admin-password "AgentWorks@2026!" \
               --authentication-type password \
               --location ${{ env.AZURE_LOCATION }} \
-              --custom-data cloudinit.yml
+              --custom-data cloudinit.yaml
       - name: Get Public IP
         id: get-ip
         uses: azure/CLI@v2
