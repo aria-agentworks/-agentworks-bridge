@@ -1,4 +1,6 @@
-=== Shadow Architect: TS Board Handshake Test ===
-Sending POST to https://results.manabadi.co.in/ts-10th-class-private-results-pre-2025-appeared-2026-regular-123456...
-Error: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'results.manabadi.co.in'. (_ssl.c:1081)>
-=== STATUS 503 ===
+=== Shadow Architect: Forced Handshake Test ===
+Sending FORCED POST to https://results.manabadi.co.in/ts-10th-class-results-2026-regular-123456...
+=== Handshake Status: 200 ===
+Response Size: 19069 bytes
+Handshake established: Legacy DB response received.
+=== STATUS 200 ===
