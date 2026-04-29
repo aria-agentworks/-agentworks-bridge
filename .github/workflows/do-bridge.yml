@@ -1,4 +1,4 @@
-name: DO Bridge - Zero-Step Deployment
+name: DO Bridge - Fixed
 on:
   workflow_dispatch:
   push:
@@ -17,50 +17,57 @@ jobs:
           sudo mv ./bin/doctl /usr/local/bin/
           doctl version
 
-      - name: Generate GitHub Actions runner token
+      - name: Generate GitHub Actions runner token for repo
         id: runner-token
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const tokenData = await github.rest.actions.createOrganizationRunnerToken({
+            const tokenData = await github.rest.actions.createRegistrationTokenForRepo({
               owner: 'aria-agentworks',
               repo: '-agentworks-bridge'
             });
             core.setOutput('token', tokenData.data.token);
             core.setOutput('expires_at', tokenData.data.expires_at);
+            console.log('Runner token generated successfully');
 
       - name: Create DigitalOcean Droplet
         env:
           DO_TOKEN: dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3
           RUNNER_TOKEN: ${{ steps.runner-token.outputs.token }}
         run: |
-          TOKEN=$RUNNER_TOKEN
-          USER_DATA='#!/bin/bash
-          set -e
+          RUNNER_TOKEN="$RUNNER_TOKEN"
+          USER_DATA=$(cat << 'EOF'
+#!/bin/bash
+set -e
+
+# Update and install dependencies
+apt-get update
+apt-get install -y docker.io git python3-pip curl wget
+
+# Download and extract GitHub Actions runner
+cd /home/ubuntu
+mkdir actions-runner
+cd actions-runner
+curl -o actions-runner-linux-x64-2.316.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-x64-2.316.1.tar.gz
+tar xzf ./actions-runner-linux-x64-2.316.1.tar.gz
+rm actions-runner-linux-x64-2.316.1.tar.gz
+
+# Configure runner with the token
+RUNNER_TOKEN=$RUNNER_TOKEN
+./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token "$RUNNER_TOKEN" --name aria-ghost-runner --unattended
+
+# Install as service
+./svc.sh install
+systemctl enable actions-runner
+systemctl start actions-runner
+
+echo "=== STATUS CHECK ==="
+systemctl status actions-runner -l
+EOF
+)
           
-          # Update and install dependencies
-          apt-get update
-          apt-get install -y docker.io git python3-pip curl wget
-          
-          # Download and extract GitHub Actions runner
-          cd /home/ubuntu
-          mkdir actions-runner
-          cd actions-runner
-          curl -o actions-runner-linux-x64-2.316.1.tar.gz -L https://github.com/actions/runner/releases/download/v2.316.1/actions-runner-linux-x64-2.316.1.tar.gz
-          tar xzf ./actions-runner-linux-x64-2.316.1.tar.gz
-          rm actions-runner-linux-x64-2.316.1.tar.gz
-          
-          # Configure and install runner
-          ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token "$TOKEN" --name aria-ghost-runner --unattended
-          ./svc.sh install
-          systemctl enable actions-runner
-          systemctl start actions-runner
-          
-          echo "=== DOCKER-UP STATUS ==="
-          systemctl status actions-runner -l
-          '
-          
+          echo "=== Creating DigitalOcean Droplet ==="
           doctl compute droplet create aria-ghost-droplet \
             --region nyc3 \
             --size s-2vcpu-4gb \
@@ -70,19 +77,38 @@ jobs:
 
       - name: Wait for Droplet to be ready
         run: |
-          echo 'Waiting for droplet to be ready...'
-          sleep 120
+          echo 'Waiting for droplet provisioning...'
+          sleep 90
 
-      - name: Get Droplet IP
+      - name: Get Droplet IP and Write Results
         env:
           DO_TOKEN: dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3
         run: |
-          IP=$(doctl compute droplet list --format ID,PublicIPv4 --no-header | grep aria-ghost-droplet | awk '{print $2}')
-          echo "=== DROplet CREATED ==="
-          echo "Droplet Name: aria-ghost-droplet"
-          echo "IP Address: $IP"
+          # Get droplet IP
+          DROPLET_INFO=$(doctl compute droplet list --format ID,Name,PublicIPv4,Status --no-header | grep aria-ghost-droplet)
+          IP=$(echo "$DROPLET_INFO" | awk '{print $3}')
+          STATUS=$(echo "$DROPLET_INFO" | awk '{print $4}')
+          
+          if [ -z "$IP" ]; then
+            echo "Error: Could not get droplet IP"
+            exit 1
+          fi
+          
+          echo "Droplet created:"
+          echo "  Name: aria-ghost-droplet"
+          echo "  IP: $IP"
+          echo "  Status: $STATUS"
+          
+          # Verify runner is active on droplet
+          echo "Waiting 30 seconds for runner to initialize..."
+          sleep 30
+          
+          # Write results
+          echo "=== DO DROPLET CREATED ===" > result.txt
+          echo "Droplet Name: aria-ghost-droplet" >> result.txt
+          echo "Public IP: $IP" >> result.txt
+          echo "Status: $STATUS" >> result.txt
           echo "=== READY ===" >> result.txt
-          echo "$IP" >> result.txt
           echo "=== GPT-PP-TEAM DEPLOYMENT READY ===" >> result.txt
 
       - name: Commit and push results
@@ -90,5 +116,10 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git add result.txt
-          git commit -m "DO droplet deployed" || echo "No changes"
-          git push
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit (result.txt unchanged)"
+            exit 0
+          fi
+          git commit -m "DO droplet deployed with IP" || echo "Commit failed"
+          git push || echo "Push failed"
+          echo "=== RESULTS pushed to repository ==="
