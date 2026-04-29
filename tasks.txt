@@ -1,3 +1,6 @@
-# heartbeat check
-echo "Heartbeat test"
-echo "=== WORKER ONLINE ==="
+# HEARTBEAT
+ls -la
+pwd
+echo "Heartbeat received at $(date)"
+echo "Disk usage: $(df -h / | tail -1)"
+echo "=== WORKER ONLINE AND RESPONDING ==="
