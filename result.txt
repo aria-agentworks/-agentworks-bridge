@@ -1,10 +1,13 @@
-=== GHOST PROTOCOL: HARDENED TUNNEL ===
+=== GHOST PROTOCOL: FINAL FIX ===
 Installing PySocks...
 Restarting Tor...
 SOCKS5 Tunnel forced at socket level.
 Verifying exit node. Azure IP: 4.213.114.95
-Current Exit IP: 23.137.254.25
+Current Exit IP: 124.198.131.133
 GHOST PROTOCOL VERIFIED: IP is non-attributable.
 === GHOST PROTOCOL: SECURE HANDSHAKE ===
-Handshake failed: <urlopen error Socket error: timed out>
-=== STATUS 503 ===
+Timed out, retrying... (1/3)
+Timed out, retrying... (2/3)
+Handshake Status: 200
+Status: Ghost Success/Verified
+=== STATUS 200 ===
