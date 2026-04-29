@@ -1,0 +1,22 @@
+#!/bin/bash
+echo "=== Maya Growth: Mission 01 (Siphon) ==="
+
+# 1. Find browser-harness binary
+BH_PATH=$(find /usr/local/bin /home/azureuser/.local/bin /usr/bin -name browser-harness | head -n 1)
+
+if [ -z "$BH_PATH" ]; then
+  echo "❌ browser-harness not found in standard paths. Trying python module..."
+  EXEC_CMD="python3 -m browser_harness.run"
+else
+  echo "✅ Found browser-harness at: $BH_PATH"
+  EXEC_CMD="$BH_PATH"
+fi
+
+# 2. Navigate to a curation node and capture page info + screenshot
+# Target: @natural_beauty_shoutout
+MISSION_CODE="goto_url('https://www.instagram.com/natural_beauty_shoutout/'); sleep(5); print(page_info()); capture_screenshot()"
+
+echo "Executing: $EXEC_CMD -c \"$MISSION_CODE\""
+$EXEC_CMD -c "$MISSION_CODE"
+
+echo "=== Mission Complete ==="
