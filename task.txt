@@ -1,0 +1,23 @@
+#!/bin/bash
+echo "=== TinyAgent Permission Verification ==="
+
+echo "1. Checking Sudo Access..."
+sudo whoami
+
+echo "2. Checking Group Membership..."
+groups
+
+echo "3. Checking Docker Access..."
+docker ps
+
+echo "4. Testing Package Installation (htop)..."
+sudo apt-get update -qq
+sudo apt-get install -y htop
+
+echo "5. Verifying Chrome Persistence (systemd)..."
+systemctl status chrome-cdp.service --no-pager
+
+echo "6. Checking Port 9222 Status..."
+ss -tlnp | grep 9222
+
+echo "=== Verification Complete ==="
