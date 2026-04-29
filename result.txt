@@ -1,8 +1,18 @@
-=== Maya Growth: Mission 01 (Correct CDPClient Usage) ===
+=== Maya Growth: Mission 01 (CDPClient) ===
+Installing cdp-use...
+✓ cdp-use installed successfully
+✓ Imported CDPClient from cdp_use.client
+✓ CDPClient created for 4.213.114.95:9222
+✓ Available methods: <bound method CDPClient.start of <cdp_use.client.CDPClient object at 0x7f9a7db5f230>>, <cdp_use.cdp.library.CDPLibrary object at 0x7f9a7cffe660>, <bound method CDPClient.stop of <cdp_use.client.CDPClient object at 0x7f9a7db5f230>>
+✓ Session started
+
+Navigating to Instagram...
+<string>:34: RuntimeWarning: coroutine 'CDPClient.start' was never awaited
+RuntimeWarning: Enable tracemalloc to get the object allocation traceback
 Traceback (most recent call last):
-  File "<string>", line 53, in <module>
+  File "<string>", line 64, in <module>
     main()
     ~~~~^^
-  File "<string>", line 7, in main
-    from cdp_use.client import CDPClient
-ModuleNotFoundError: No module named 'cdp_use'
+  File "<string>", line 39, in main
+    response = client.send("Page.navigate", {"url": "https://www.instagram.com/natural_beauty_shoutout/"})
+TypeError: 'CDPLibrary' object is not callable
