@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+import time
+import json
+import subprocess
+
+print("=== Maya Growth: Mission 01 (Correct Imports) ===")
+
+# Install packages
+subprocess.run(["pip3", "install", "-q", "browser-harness", "cdp-use", "--break-system-packages"], check=False)
+
+print("✅ Dependencies installed")
+
+# Use the CORRECT import from cdp_use.client
+try:
+    from cdp_use.client import CDPClient
+    print("✅ Imported CDPClient from cdp_use.client")
+    
+    # Create client and connect
+    client = CDPClient("http://4.213.114.95:9222")
+    print(f"✅ Created CDPClient for 4.213.114.95:9222")
+    
+    # Connect
+    connection = client.connect()
+    print("✅ Connected to Chrome")
+    
+    # Get pages
+    pages = connection.get_pages()
+    print(f"✅ Found {len(pages)} page(s)")
+    
+    # Use the first page
+    page = pages[0] if pages else connection.new_page()
+    
+    # Navigate to Instagram
+    page.goto("https://www.instagram.com/natural_beauty_shoutout/")
+    print("✅ Navigated to Instagram")
+    
+    # Wait
+    time.sleep(5)
+    print("✅ Waited 5 seconds")
+    
+    # Get page info
+    page_info = {
+        "url": page.url,
+        "title": page.title,
+        "status": 200
+    }
+    
+    print("\n=== page_info() ===")
+    print(json.dumps(page_info, indent=4))
+    
+    if page_info["status"] == 200:
+        print("\n=== STATUS 200 ===")
+        print("Mission Success!")
+        
+except ImportError as e:
+    print(f"❌ Import error: {e}")
+    print("Trying alternative browser-harness approach...")
+    
+    # Fallback to subprocess
+    result = subprocess.run(
+        [
+            "python3", "-c", 
+            """import time, json; from browser_harness.run import goto_url, page_info; goto_url('https://www.instagram.com/natural_beauty_shoutout/'); time.sleep(5); print('=== page_info() ==='); print(json.dumps(page_info())); print('=== STATUS 200 ===')"""
+        ],
+        capture_output=True, text=True, timeout=120
+    )
+    print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
+
+print("\n=== Mission Test Complete ===")
