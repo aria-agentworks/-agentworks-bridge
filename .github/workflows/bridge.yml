@@ -12,11 +12,22 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      - name: Zero-Dep Heartbeat
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run bash tasks.txt
+        run: bash tasks.txt
+      - name: Git config user.email
+        run: git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Git config user.name
+        run: git config user.name "github-actions[bot]"
+      - name: Git add result.txt
+        run: git add result.txt
+      - name: Git commit -m "gpt-pp-team deployment" || echo "No changes"
+        run: git commit -m "gpt-pp-team deployment" || echo "No changes"
+      - name: Configure PAT
         run: |
-          echo "=== ZERO-DEP HEARTBEAT SUCCESS $(date) ===" > result.txt
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add result.txt
-          git commit -m "Zero-dep heartbeat" || echo "No changes"
-          git push
+          git remote set-url origin https://aria-agentworks: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@github.com/aria-agentworks/-agentworks-bridge.git
+      - name: Git push
+        run: git push
