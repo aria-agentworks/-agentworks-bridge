@@ -2,7 +2,7 @@ name: Strike Bridge
 on:
   push:
     paths:
-      - 'task.txt'
+      - 'tasks.txt'
   workflow_dispatch:
 jobs:
   run-task:
@@ -11,9 +11,9 @@ jobs:
       contents: write
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - name: Install dependencies
@@ -21,4 +21,4 @@ jobs:
       - name: Run Bridge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 main.py --once
+        run: python3 main.py -once
