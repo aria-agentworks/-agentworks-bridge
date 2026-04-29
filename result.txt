@@ -1,3 +1,2 @@
-Sending payload to http://4.213.114.95:5678/webhook/maya...
-Status Code: 401
-Response Body: Authorization is required!
+Status: 401
+Response: Authorization is required!
