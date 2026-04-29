@@ -1,18 +1,12 @@
-=== Maya Growth: Mission 01 (Reading Module Contents) ===
-
-1. Contents of browser_harness/__init__.py:
-============================================================
-__version__ = "0.0.1"
-
-
-2. Contents of cdp_use/__init__.py:
-============================================================
-from cdp_use.client import CDPClient
-
-__all__ = ["CDPClient"]
-
-
-=== Content Read Complete ===
+=== Maya Growth: Mission 01 (Correct Imports) ===
+✅ Dependencies installed
+✅ Imported CDPClient from cdp_use.client
+✅ Created CDPClient for 4.213.114.95:9222
 
 [notice] A new release of pip is available: 26.0.1 -> 26.1
 [notice] To update, run: pip install --upgrade pip
+Traceback (most recent call last):
+  File "<string>", line 22, in <module>
+    connection = client.connect()
+                 ^^^^^^^^^^^^^^
+AttributeError: 'CDPClient' object has no attribute 'connect'
