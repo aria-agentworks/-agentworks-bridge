@@ -1,1 +1,18 @@
-=== Robust Remote Browser Setup ===
+=== May Growth Mission Test ===
+Testing Instagram Profile Navigation
+
+Test 1: Navigating to https://www.instagram.com/officialmaya.ai/
+Running: browser-harness -c "goto_url('https://www.instagram.com/officialmaya.ai/'); sleep(3); print(page_info())"
+=== Test 1 Result ===
+
+Errors: /bin/sh: 1: browser-harness: not found
+
+
+Test 2: Navigating to https://www.instagram.com/natural_beauty_shoutout/
+Running: browser-harness -c "goto_url('https://www.instagram.com/natural_beauty_shoutout/'); sleep(3); print(page_info())"
+=== Test 2 Result ===
+
+Errors: /bin/sh: 1: browser-harness: not found
+
+
+=== May Growth Mission Test Complete ===
