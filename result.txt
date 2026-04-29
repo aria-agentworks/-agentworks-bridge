@@ -1,12 +1,15 @@
-=== Maya Growth: Mission 01 (Correct Imports) ===
-✅ Dependencies installed
-✅ Imported CDPClient from cdp_use.client
-✅ Created CDPClient for 4.213.114.95:9222
+=== Maya Growth: Mission 01 (CDPClient Inspection) ===
+Imported: <class 'cdp_use.client.CDPClient'>
+
+CDPClient methods:
+Available: ['additional_headers', 'emit_event', 'max_ws_frame_size', 'msg_id', 'pending_requests', 'register', 'send', 'send_raw', 'start', 'stop', 'url', 'ws']
+
+Creating browser session...
+Trying direct connection to Chrome DevTools...
 
 [notice] A new release of pip is available: 26.0.1 -> 26.1
 [notice] To update, run: pip install --upgrade pip
 Traceback (most recent call last):
-  File "<string>", line 22, in <module>
-    connection = client.connect()
-                 ^^^^^^^^^^^^^^
-AttributeError: 'CDPClient' object has no attribute 'connect'
+  File "<string>", line 43, in <module>
+    import websocket
+ModuleNotFoundError: No module named 'websocket'
