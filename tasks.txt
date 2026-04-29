@@ -1,1 +1,1 @@
-echo '=== TRIGGERING DO BRIDGE WORKFLOW ==='
+echo '=== RE-TRIGGERING DO BRIDGE FIX ==='
