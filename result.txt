@@ -1,36 +1,11 @@
-Collecting browser-harness
-  Downloading browser_harness-0.0.1-py3-none-any.whl.metadata (265 bytes)
-Collecting cdp-use
-  Downloading cdp_use-1.4.5-py3-none-any.whl.metadata (9.5 kB)
-Collecting httpx>=0.28.1 (from cdp-use)
-  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
-Collecting typing-extensions>=4.12.2 (from cdp-use)
-  Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
-Collecting websockets>=15.0.1 (from cdp-use)
-  Downloading websockets-16.0-cp314-cp314-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.8 kB)
-Collecting anyio (from httpx>=0.28.1->cdp-use)
-  Downloading anyio-4.13.0-py3-none-any.whl.metadata (4.5 kB)
-Requirement already satisfied: certifi in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from httpx>=0.28.1->cdp-use) (2026.4.22)
-Collecting httpcore==1.* (from httpx>=0.28.1->cdp-use)
-  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
-Requirement already satisfied: idna in /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages (from httpx>=0.28.1->cdp-use) (3.13)
-Collecting h11>=0.16 (from httpcore==1.*->httpx>=0.28.1->cdp-use)
-  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
-Downloading browser_harness-0.0.1-py3-none-any.whl (1.4 kB)
-Downloading cdp_use-1.4.5-py3-none-any.whl (350 kB)
-Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
-Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
-Downloading h11-0.16.0-py3-none-any.whl (37 kB)
-Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
-Downloading websockets-16.0-cp314-cp314-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (185 kB)
-Downloading anyio-4.13.0-py3-none-any.whl (114 kB)
-Installing collected packages: websockets, typing-extensions, h11, browser-harness, anyio, httpcore, httpx, cdp-use
+=== Maya Growth: Mission 01 (Remote Browser) ===
+Testing browser-harness CLI...
+❌ browser-harness binary not found
+Attempting to find in PATH...
 
-Successfully installed anyio-4.13.0 browser-harness-0.0.1 cdp-use-1.4.5 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 typing-extensions-4.15.0 websockets-16.0
+❌ browser-harness not found - installation may have failed
+
+=== Mission Test Complete ===
 
 [notice] A new release of pip is available: 26.0.1 -> 26.1
 [notice] To update, run: pip install --upgrade pip
-Traceback (most recent call last):
-  File "<string>", line 6, in <module>
-    from browser_harness.run import goto_url, page_info, capture_screenshot, set_cdp_url
-ModuleNotFoundError: No module named 'browser_harness.run'
