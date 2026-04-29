@@ -1,4 +1,4 @@
-name: DO Bridge - Fixed
+name: DO Bridge - Fixed 2
 on:
   workflow_dispatch:
   push:
@@ -66,7 +66,7 @@ echo "=== STATUS CHECK ==="
 systemctl status actions-runner -l
 EOF
 )
-          
+
           echo "=== Creating DigitalOcean Droplet ==="
           doctl compute droplet create aria-ghost-droplet \
             --region nyc3 \
@@ -88,21 +88,21 @@ EOF
           DROPLET_INFO=$(doctl compute droplet list --format ID,Name,PublicIPv4,Status --no-header | grep aria-ghost-droplet)
           IP=$(echo "$DROPLET_INFO" | awk '{print $3}')
           STATUS=$(echo "$DROPLET_INFO" | awk '{print $4}')
-          
+
           if [ -z "$IP" ]; then
             echo "Error: Could not get droplet IP"
             exit 1
           fi
-          
+
           echo "Droplet created:"
           echo "  Name: aria-ghost-droplet"
           echo "  IP: $IP"
           echo "  Status: $STATUS"
-          
-          # Verify runner is active on droplet
-          echo "Waiting 30 seconds for runner to initialize..."
-          sleep 30
-          
+
+          # Verify runner is active on droplet (wait longer if needed)
+          echo "Waiting 60 seconds for runner to initialize..."
+          sleep 60
+
           # Write results
           echo "=== DO DROPLET CREATED ===" > result.txt
           echo "Droplet Name: aria-ghost-droplet" >> result.txt
