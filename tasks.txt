@@ -4,4 +4,3 @@ echo "Testing if task runner is responding"
 df -h / 2>/dev/null || echo "df failed"
 date
 echo "=== WORKER RESPONSIVE ==="
-echo "Verification complete at $(date)"
