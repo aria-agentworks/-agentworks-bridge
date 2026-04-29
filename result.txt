@@ -1,4 +1,4 @@
-/bin/sh: 1: import: not found
-/bin/sh: 2: import: not found
-/bin/sh: 3: import: not found
-/bin/sh: 5: Syntax error: word unexpected (expecting ")")
+=== Maya Growth: Mission 01 (Zero-Dependency) ===
+Connecting to Chrome at http://4.213.114.95:9222...
+Error: <urlopen error [Errno 110] Connection timed out>
+=== Mission Test Complete ===
