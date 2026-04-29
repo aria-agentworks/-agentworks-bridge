@@ -1,0 +1,42 @@
+#!/bin/bash
+echo "=== Starting Comprehensive Browser Test ==="
+
+# Check Chrome running on port 9222
+echo "Checking Chrome..."
+if curl -s http://localhost:9222/json/version > /dev/null 2>&1; then
+    echo "✅ Chrome is running with CDP enabled!"
+else
+    echo "❌ Chrome not running on port 9222 - restart needed"
+    google-chrome-stable --headless --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-profile --no-sandbox > /tmp/chrome.log 2>&1 &
+    sleep 5
+fi
+
+# Find browser-harness
+echo "Finding browser-harness..."
+BROWSER_HARNESS_PATH=$(which browser-harness 2>/dev/null || echo "")
+if [ -z "$BROWSER_HARNESS_PATH" ]; then
+    # Try pip install location
+    BROWSER_HARNESS_PATH=$(python3 -m browser_harness 2>/dev/null || echo "")
+fi
+
+echo "browser-harness path: $BROWSER_HARNESS_PATH"
+
+# Install if not found
+if [ -z "$BROWSER_HARNESS_PATH" ] || ! which browser-harness > /dev/null 2>&1; then
+    echo "Installing browser-harness..."
+    pip3 install browser-harness cdp-use --break-system-packages --quiet
+    echo "Installation complete"
+fi
+
+# Final check
+if which browser-harness > /dev/null 2>&1; then
+    echo "✅ browser-harness found!"
+    
+    # Test browser
+    echo "Running GitHub navigation test..."
+    browser-harness -c "goto_url('https://github.com'); sleep(2); print(page_info())"
+else
+    echo "❌ browser-harness not installed - installation failed"
+fi
+
+echo "=== Browser Test Complete ==="
