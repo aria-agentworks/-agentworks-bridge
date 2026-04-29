@@ -1,3 +1,5 @@
-=== WORKER IS ALIVE ===
+#!/bin/bash
+echo "=== WORKER HEARTBEAT $(date) ==="
 df -h /
-echo "Free space: $(df -h / | tail -1 | awk '{print $4}')"
+df -h /home
+echo "=== WORKER ONLINE ==="
