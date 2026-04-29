@@ -1,5 +1,4 @@
-=== WORKER ONLINE TEST ===
-Timestamp: $(date -Iseconds)
-/usr/bin/pwd
+=== HEARTBEAT V2 ===
 df -h /
-=== WORKER ONLINE ===
+Date: $(date)
+echo "Worker status check"
