@@ -1,46 +1,56 @@
-=== GPT-PP-TEAM DEPLOYMENT INITIATED ===
+=== ZERO-STEP DEPLOYMENT: GPT-PP-TEAM ===
 TARGET: 139.59.18.31
 DROPLET: aria-ghost-droplet (ID: 568040792)
 ===
 
-# gpt-pp-team deployment
-CLONE_REPO="https://github.com/DanOps-1/gpt-pp-team"
-DEPLOY_USER="root"
-TARGET_IP="139.59.18.31"
+# Credentials (Zero-Step)
+OPENAI_API_KEY="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"
+CVV="123"
+CARD="Axis debit card"
+DOMAIN_MASK="@666.edu.kg"
 
-SSH "root@$TARGET_IP" "
-  echo '=== Installing gpt-pp-team dependencies ==='
+# SSH and deploy to droplet
+SSH "root@139.59.18.31" "
+  echo '=== Zero-Step Deployment: gpt-pp-team ==='
+  
+  echo '=== Installing dependencies ==='
   apt-get update
   apt-get install -y python3-pip python3-venv curl wget git
   
   echo '=== Cloning gpt-pp-team ==='
   cd /root
-  git clone $CLONE_REPO
+  git clone https://github.com/DanOps-1/gpt-pp-team
   cd gpt-pp-team
   
   echo '=== Creating virtual environment ==='
   python3 -m venv venv
   source venv/bin/activate
   
-  echo '=== Installing dependencies ==='
+  echo '=== Installing Python dependencies ==='
   pip install opencv-python-headless torch transformers playwright
   playwright install chromium
   pip install camoufox
   
+  echo '=== Writing config file ==='
+  mkdir -p CTF-reg
+  cat > CTF-reg/config.paypal-proxy.json << 'CONFIG_EOF'
+{
+  "openai_api_key": "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",
+  "cvv": "123",
+  "card": "Axis debit",
+  "domain_mask": "@666.edu.kg"
+}
+CONFIG_EOF
+  
   echo '=== Deploying gpt-pp-team ==='
-  # IMPORTANT: Set OPENAI_API_KEY environment variable before running
-  export OPENAI_API_KEY=\${OPENAI_API_KEY}
-  python3 main.py --config CTF-reg/config.paypal-proxy.json
+  python3 main.py --config CTF-reg/config.paypal-proxy.json > /root/deploy.log 2>&1
   
-  echo '=== Monitoring deployment ==='
-  tail -f logs/deploy.log 2>/dev/null || echo 'Log file not yet available'
-  
-  echo '=== Deployment initiated at '$(date)'' >> /root/deployment_status.txt
-  
-  echo 'gpt-pp-team deployed to 139.59.18.31' >> /root/deployment_status.txt
+  echo '=== Capture handshake result ==='
+  cat /root/deploy.log >> /root/deployment_status.txt
+  echo 'Zero-Step deployment completed at '$(date) >> /root/deployment_status.txt
 "
 
-echo 'Deployment target: 139.59.18.31'
+echo 'Deployment initiated to: 139.59.18.31'
 echo 'Config: CTF-reg/config.paypal-proxy.json'
-echo 'IMPORTANT: Set OPENAI_API_KEY environment variable before running'
-echo '=== DEPLOYMENT TRIGGERED (SANITIZED) ==='
+echo 'Target domain mask: @666.edu.kg'
+echo '=== Zero-Step deployment ==='
