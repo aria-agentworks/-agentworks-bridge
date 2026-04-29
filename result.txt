@@ -1,13 +1,470 @@
-=== GHOST PROTOCOL: FINAL FIX ===
-Installing PySocks...
-Restarting Tor...
-SOCKS5 Tunnel forced at socket level.
-Verifying exit node. Azure IP: 4.213.114.95
-Current Exit IP: 124.198.131.133
-GHOST PROTOCOL VERIFIED: IP is non-attributable.
-=== GHOST PROTOCOL: SECURE HANDSHAKE ===
-Timed out, retrying... (1/3)
-Timed out, retrying... (2/3)
-Handshake Status: 200
-Status: Ghost Success/Verified
-=== STATUS 200 ===
+Installing system deps...
+Get:1 https://download.docker.com/linux/ubuntu jammy InRelease [48.5 kB]
+Hit:2 http://azure.archive.ubuntu.com/ubuntu jammy InRelease
+Get:3 http://azure.archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:4 https://dl.google.com/linux/chrome-stable/deb stable InRelease [1825 B]
+Hit:5 http://azure.archive.ubuntu.com/ubuntu jammy-backports InRelease
+Get:6 http://azure.archive.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:7 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3440 kB]
+Get:8 http://azure.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1268 kB]
+Get:9 https://dl.google.com/linux/chrome-stable/deb stable/main amd64 Packages [1216 B]
+Get:10 http://azure.archive.ubuntu.com/ubuntu jammy-security/main amd64 c-n-f Metadata [14.2 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu jammy-security/universe amd64 c-n-f Metadata [22.9 kB]
+Fetched 5053 kB in 1s (5020 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+python3-pip is already the newest version (22.0.2+dfsg-1ubuntu0.7).
+xvfb is already the newest version (2:21.1.4-2ubuntu1.7~22.04.16).
+The following additional packages will be installed:
+  python3-pip-whl python3-setuptools-whl python3.10-venv
+Suggested packages:
+  sqlite3-doc
+The following NEW packages will be installed:
+  libsqlite3-dev python3-pip-whl python3-setuptools-whl python3-venv
+  python3.10-venv
+0 upgraded, 5 newly installed, 0 to remove and 7 not upgraded.
+Need to get 3326 kB of archives.
+After this operation, 6064 kB of additional disk space will be used.
+Get:1 http://azure.archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsqlite3-dev amd64 3.37.2-2ubuntu0.5 [847 kB]
+Get:2 http://azure.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 python3-pip-whl all 22.0.2+dfsg-1ubuntu0.7 [1683 kB]
+Get:3 http://azure.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 python3-setuptools-whl all 59.6.0-1.2ubuntu0.22.04.3 [789 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 python3.10-venv amd64 3.10.12-1~22.04.15 [5714 B]
+Get:5 http://azure.archive.ubuntu.com/ubuntu jammy-updates/universe amd64 python3-venv amd64 3.10.6-1~22.04.1 [1042 B]
+Fetched 3326 kB in 5s (646 kB/s)
+Selecting previously unselected package libsqlite3-dev:amd64.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 87283 files and directories currently installed.)
+Preparing to unpack .../libsqlite3-dev_3.37.2-2ubuntu0.5_amd64.deb ...
+Unpacking libsqlite3-dev:amd64 (3.37.2-2ubuntu0.5) ...
+Selecting previously unselected package python3-pip-whl.
+Preparing to unpack .../python3-pip-whl_22.0.2+dfsg-1ubuntu0.7_all.deb ...
+Unpacking python3-pip-whl (22.0.2+dfsg-1ubuntu0.7) ...
+Selecting previously unselected package python3-setuptools-whl.
+Preparing to unpack .../python3-setuptools-whl_59.6.0-1.2ubuntu0.22.04.3_all.deb ...
+Unpacking python3-setuptools-whl (59.6.0-1.2ubuntu0.22.04.3) ...
+Selecting previously unselected package python3.10-venv.
+Preparing to unpack .../python3.10-venv_3.10.12-1~22.04.15_amd64.deb ...
+Unpacking python3.10-venv (3.10.12-1~22.04.15) ...
+Selecting previously unselected package python3-venv.
+Preparing to unpack .../python3-venv_3.10.6-1~22.04.1_amd64.deb ...
+Unpacking python3-venv (3.10.6-1~22.04.1) ...
+Setting up python3-setuptools-whl (59.6.0-1.2ubuntu0.22.04.3) ...
+Setting up python3-pip-whl (22.0.2+dfsg-1ubuntu0.7) ...
+Setting up libsqlite3-dev:amd64 (3.37.2-2ubuntu0.5) ...
+Setting up python3.10-venv (3.10.12-1~22.04.15) ...
+Setting up python3-venv (3.10.6-1~22.04.1) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+Installing Python ML and automation deps...
+Collecting torch
+  Downloading torch-2.11.0-cp314-cp314-manylinux_2_28_x86_64.whl.metadata (29 kB)
+Collecting transformers
+  Downloading transformers-5.7.0-py3-none-any.whl.metadata (33 kB)
+Collecting opencv-python-headless
+  Downloading opencv_python_headless-4.13.0.92-cp37-abi3-manylinux_2_28_x86_64.whl.metadata (19 kB)
+Collecting numpy
+  Downloading numpy-2.4.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting playwright
+  Downloading playwright-1.59.0-py3-none-manylinux1_x86_64.whl.metadata (3.5 kB)
+Collecting camoufox
+  Downloading camoufox-0.4.11-py3-none-any.whl.metadata (3.3 kB)
+Collecting browserforge
+  Downloading browserforge-1.2.4-py3-none-any.whl.metadata (28 kB)
+Collecting mitmproxy
+  Downloading mitmproxy-12.2.2-py3-none-any.whl.metadata (7.8 kB)
+Collecting pybase64
+  Downloading pybase64-1.4.3-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl.metadata (8.7 kB)
+Collecting filelock (from torch)
+  Downloading filelock-3.29.0-py3-none-any.whl.metadata (2.0 kB)
+Collecting typing-extensions>=4.10.0 (from torch)
+  Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools<82 (from torch)
+  Downloading setuptools-81.0.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch)
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch)
+  Downloading networkx-3.6.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting jinja2 (from torch)
+  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch)
+  Downloading fsspec-2026.3.0-py3-none-any.whl.metadata (10 kB)
+Collecting cuda-toolkit==13.0.2 (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading cuda_toolkit-13.0.2-py2.py3-none-any.whl.metadata (9.4 kB)
+Collecting cuda-bindings<14,>=13.0.3 (from torch)
+  Downloading cuda_bindings-13.2.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (2.3 kB)
+Collecting nvidia-cudnn-cu13==9.19.0.56 (from torch)
+  Downloading nvidia_cudnn_cu13-9.19.0.56-py3-none-manylinux_2_27_x86_64.whl.metadata (1.9 kB)
+Collecting nvidia-cusparselt-cu13==0.8.0 (from torch)
+  Downloading nvidia_cusparselt_cu13-0.8.0-py3-none-manylinux2014_x86_64.whl.metadata (12 kB)
+Collecting nvidia-nccl-cu13==2.28.9 (from torch)
+  Downloading nvidia_nccl_cu13-2.28.9-py3-none-manylinux_2_18_x86_64.whl.metadata (2.0 kB)
+Collecting nvidia-nvshmem-cu13==3.4.5 (from torch)
+  Downloading nvidia_nvshmem_cu13-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.1 kB)
+Collecting triton==3.6.0 (from torch)
+  Downloading triton-3.6.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cublas==13.1.0.3.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cublas-13.1.0.3-py3-none-manylinux_2_27_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-runtime==13.0.96.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cufft==12.0.0.61.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cufft-12.0.0.61-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-cufile==1.15.1.6.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cufile-1.15.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-cupti==13.0.85.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cuda_cupti-13.0.85-py3-none-manylinux_2_25_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-curand==10.4.0.35.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_curand-10.4.0.35-py3-none-manylinux_2_27_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cusolver==12.0.4.66.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cusolver-12.0.4.66-py3-none-manylinux_2_27_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-cusparse==12.6.3.3.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-nvjitlink==13.0.88.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_nvjitlink-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-nvrtc==13.0.88.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_cuda_nvrtc-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-nvtx==13.0.85.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch)
+  Downloading nvidia_nvtx-13.0.85-py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.whl.metadata (1.8 kB)
+Collecting cuda-pathfinder~=1.1 (from cuda-bindings<14,>=13.0.3->torch)
+  Downloading cuda_pathfinder-1.5.4-py3-none-any.whl.metadata (1.9 kB)
+Collecting huggingface-hub<2.0,>=1.5.0 (from transformers)
+  Downloading huggingface_hub-1.12.2-py3-none-any.whl.metadata (14 kB)
+Collecting packaging>=20.0 (from transformers)
+  Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting pyyaml>=5.1 (from transformers)
+  Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting regex>=2025.10.22 (from transformers)
+  Downloading regex-2026.4.4-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+Collecting tokenizers<=0.23.0,>=0.22.0 (from transformers)
+  Downloading tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting typer (from transformers)
+  Downloading typer-0.25.0-py3-none-any.whl.metadata (15 kB)
+Collecting safetensors>=0.4.3 (from transformers)
+  Downloading safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.1 kB)
+Collecting tqdm>=4.27 (from transformers)
+  Downloading tqdm-4.67.3-py3-none-any.whl.metadata (57 kB)
+Collecting hf-xet<2.0.0,>=1.4.3 (from huggingface-hub<2.0,>=1.5.0->transformers)
+  Downloading hf_xet-1.4.3-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (4.9 kB)
+Collecting httpx<1,>=0.23.0 (from huggingface-hub<2.0,>=1.5.0->transformers)
+  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting anyio (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers)
+  Downloading anyio-4.13.0-py3-none-any.whl.metadata (4.5 kB)
+Requirement already satisfied: certifi in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers) (2026.4.22)
+Collecting httpcore==1.* (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers)
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Requirement already satisfied: idna in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers) (3.13)
+Collecting h11>=0.16 (from httpcore==1.*->httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers)
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting pyee<14,>=13 (from playwright)
+  Downloading pyee-13.0.1-py3-none-any.whl.metadata (3.0 kB)
+Collecting greenlet<4.0.0,>=3.1.1 (from playwright)
+  Downloading greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.7 kB)
+Collecting click (from camoufox)
+  Downloading click-8.3.3-py3-none-any.whl.metadata (2.6 kB)
+Collecting language-tags (from camoufox)
+  Downloading language_tags-1.2.0-py3-none-any.whl.metadata (2.1 kB)
+Collecting lxml (from camoufox)
+  Downloading lxml-6.1.0-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (4.0 kB)
+Collecting orjson (from camoufox)
+  Downloading orjson-3.11.8-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (41 kB)
+Collecting platformdirs (from camoufox)
+  Downloading platformdirs-4.9.6-py3-none-any.whl.metadata (4.7 kB)
+Requirement already satisfied: pysocks in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from camoufox) (1.7.1)
+Requirement already satisfied: requests in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from camoufox) (2.33.1)
+Collecting screeninfo (from camoufox)
+  Downloading screeninfo-0.8.1-py3-none-any.whl.metadata (2.9 kB)
+Collecting ua_parser (from camoufox)
+  Downloading ua_parser-1.0.2-py3-none-any.whl.metadata (5.5 kB)
+Collecting apify_fingerprint_datapoints (from browserforge)
+  Downloading apify_fingerprint_datapoints-0.12.0-py3-none-any.whl.metadata (14 kB)
+Collecting aioquic<=1.2.0,>=1.2.0 (from mitmproxy)
+  Downloading aioquic-1.2.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.3 kB)
+Collecting argon2-cffi<=25.1.0,>=23.1.0 (from mitmproxy)
+  Downloading argon2_cffi-25.1.0-py3-none-any.whl.metadata (4.1 kB)
+Collecting asgiref<=3.11.0,>=3.2.10 (from mitmproxy)
+  Downloading asgiref-3.11.0-py3-none-any.whl.metadata (9.3 kB)
+Collecting bcrypt<=5.0.0,>=5.0.0 (from mitmproxy)
+  Downloading bcrypt-5.0.0-cp39-abi3-manylinux_2_34_x86_64.whl.metadata (10 kB)
+Collecting Brotli<=1.2.0,>=1.0 (from mitmproxy)
+  Downloading brotli-1.2.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.1 kB)
+Collecting cryptography<=46.1,>=42.0 (from mitmproxy)
+  Downloading cryptography-46.0.7-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (5.7 kB)
+Collecting flask<=3.1.3,>=3.0 (from mitmproxy)
+  Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+Collecting h2<=4.3.0,>=4.3.0 (from mitmproxy)
+  Downloading h2-4.3.0-py3-none-any.whl.metadata (5.1 kB)
+Collecting hyperframe<=6.1.0,>=6.0 (from mitmproxy)
+  Downloading hyperframe-6.1.0-py3-none-any.whl.metadata (4.3 kB)
+Collecting kaitaistruct<=0.11,>=0.10 (from mitmproxy)
+  Downloading kaitaistruct-0.11-py2.py3-none-any.whl.metadata (2.9 kB)
+Collecting ldap3<=2.9.1,>=2.8 (from mitmproxy)
+  Downloading ldap3-2.9.1-py2.py3-none-any.whl.metadata (5.4 kB)
+Collecting mitmproxy-rs<0.13,>=0.12.6 (from mitmproxy)
+  Downloading mitmproxy_rs-0.12.9-cp312-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (667 bytes)
+Collecting msgpack<=1.1.2,>=1.0.0 (from mitmproxy)
+  Downloading msgpack-1.1.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+Collecting pyOpenSSL<=25.3.0,>=24.3 (from mitmproxy)
+  Downloading pyopenssl-25.3.0-py3-none-any.whl.metadata (17 kB)
+Collecting pyparsing<=3.3.2,>=2.4.2 (from mitmproxy)
+  Downloading pyparsing-3.3.2-py3-none-any.whl.metadata (5.8 kB)
+Collecting pyperclip<=1.11.0,>=1.9.0 (from mitmproxy)
+  Downloading pyperclip-1.11.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting ruamel.yaml<=0.19.1,>=0.18.10 (from mitmproxy)
+  Downloading ruamel_yaml-0.19.1-py3-none-any.whl.metadata (16 kB)
+Collecting sortedcontainers<=2.4.0,>=2.3 (from mitmproxy)
+  Downloading sortedcontainers-2.4.0-py2.py3-none-any.whl.metadata (10 kB)
+Collecting tornado<=6.5.5,>=6.5.0 (from mitmproxy)
+  Downloading tornado-6.5.5-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (2.8 kB)
+Collecting urwid<=3.0.5,>=2.6.14 (from mitmproxy)
+  Downloading urwid-3.0.5-py3-none-any.whl.metadata (11 kB)
+Collecting wsproto<=1.3.2,>=1.0 (from mitmproxy)
+  Downloading wsproto-1.3.2-py3-none-any.whl.metadata (5.2 kB)
+Collecting publicsuffix2<=2.20191221,>=2.20190812 (from mitmproxy)
+  Downloading publicsuffix2-2.20191221-py2.py3-none-any.whl.metadata (13 kB)
+Collecting zstandard<=0.25.0,>=0.25 (from mitmproxy)
+  Downloading zstandard-0.25.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+Collecting pylsqpack<0.4.0,>=0.3.3 (from aioquic<=1.2.0,>=1.2.0->mitmproxy)
+  Downloading pylsqpack-0.3.24-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.1 kB)
+Collecting service-identity>=24.1.0 (from aioquic<=1.2.0,>=1.2.0->mitmproxy)
+  Downloading service_identity-24.2.0-py3-none-any.whl.metadata (5.1 kB)
+Collecting argon2-cffi-bindings (from argon2-cffi<=25.1.0,>=23.1.0->mitmproxy)
+  Downloading argon2_cffi_bindings-25.1.0-cp39-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (7.4 kB)
+Collecting cffi>=2.0.0 (from cryptography<=46.1,>=42.0->mitmproxy)
+  Downloading cffi-2.0.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.6 kB)
+Collecting blinker>=1.9.0 (from flask<=3.1.3,>=3.0->mitmproxy)
+  Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+Collecting itsdangerous>=2.2.0 (from flask<=3.1.3,>=3.0->mitmproxy)
+  Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+Collecting markupsafe>=2.1.1 (from flask<=3.1.3,>=3.0->mitmproxy)
+  Downloading markupsafe-3.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Collecting werkzeug>=3.1.0 (from flask<=3.1.3,>=3.0->mitmproxy)
+  Downloading werkzeug-3.1.8-py3-none-any.whl.metadata (4.0 kB)
+Collecting hpack<5,>=4.1 (from h2<=4.3.0,>=4.3.0->mitmproxy)
+  Downloading hpack-4.1.0-py3-none-any.whl.metadata (4.6 kB)
+Collecting pyasn1>=0.4.6 (from ldap3<=2.9.1,>=2.8->mitmproxy)
+  Downloading pyasn1-0.6.3-py3-none-any.whl.metadata (8.4 kB)
+Collecting mitmproxy-linux==0.12.9 (from mitmproxy-rs<0.13,>=0.12.6->mitmproxy)
+  Downloading mitmproxy_linux-0.12.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (266 bytes)
+Collecting wcwidth>=0.4 (from urwid<=3.0.5,>=2.6.14->mitmproxy)
+  Downloading wcwidth-0.6.0-py3-none-any.whl.metadata (30 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography<=46.1,>=42.0->mitmproxy)
+  Downloading pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Collecting attrs>=19.1.0 (from service-identity>=24.1.0->aioquic<=1.2.0,>=1.2.0->mitmproxy)
+  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+Collecting pyasn1-modules (from service-identity>=24.1.0->aioquic<=1.2.0,>=1.2.0->mitmproxy)
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch)
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from requests->camoufox) (3.4.7)
+Requirement already satisfied: urllib3<3,>=1.26 in /home/tinyagent/actions-runner/_work/_tool/Python/3.14.4/x64/lib/python3.14/site-packages (from requests->camoufox) (2.6.3)
+Collecting shellingham>=1.3.0 (from typer->transformers)
+  Downloading shellingham-1.5.4-py2.py3-none-any.whl.metadata (3.5 kB)
+Collecting rich>=13.8.0 (from typer->transformers)
+  Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+Collecting annotated-doc>=0.0.2 (from typer->transformers)
+  Downloading annotated_doc-0.0.4-py3-none-any.whl.metadata (6.6 kB)
+Collecting markdown-it-py>=2.2.0 (from rich>=13.8.0->typer->transformers)
+  Downloading markdown_it_py-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+Collecting pygments<3.0.0,>=2.13.0 (from rich>=13.8.0->typer->transformers)
+  Downloading pygments-2.20.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich>=13.8.0->typer->transformers)
+  Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting ua-parser-builtins (from ua_parser->camoufox)
+  Downloading ua_parser_builtins-202603-py3-none-any.whl.metadata (1.8 kB)
+Downloading torch-2.11.0-cp314-cp314-manylinux_2_28_x86_64.whl (530.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 530.7/530.7 MB 15.8 MB/s  0:00:17
+Downloading cuda_toolkit-13.0.2-py2.py3-none-any.whl (2.4 kB)
+Downloading nvidia_cudnn_cu13-9.19.0.56-py3-none-manylinux_2_27_x86_64.whl (366.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 366.1/366.1 MB 26.4 MB/s  0:00:10
+Downloading nvidia_cusparselt_cu13-0.8.0-py3-none-manylinux2014_x86_64.whl (169.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 169.9/169.9 MB 42.7 MB/s  0:00:03
+Downloading nvidia_nccl_cu13-2.28.9-py3-none-manylinux_2_18_x86_64.whl (196.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 196.5/196.5 MB 20.9 MB/s  0:00:09
+Downloading nvidia_nvshmem_cu13-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (60.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.4/60.4 MB 48.1 MB/s  0:00:01
+Downloading triton-3.6.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (188.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 188.3/188.3 MB 49.1 MB/s  0:00:03
+Downloading cuda_bindings-13.2.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (6.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.2/6.2 MB 18.0 MB/s  0:00:00
+Downloading cuda_pathfinder-1.5.4-py3-none-any.whl (51 kB)
+Downloading nvidia_cublas-13.1.0.3-py3-none-manylinux_2_27_x86_64.whl (423.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 423.1/423.1 MB 17.0 MB/s  0:00:15
+Downloading nvidia_cuda_cupti-13.0.85-py3-none-manylinux_2_25_x86_64.whl (10.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.7/10.7 MB 41.7 MB/s  0:00:00
+Downloading nvidia_cuda_nvrtc-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (90.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 90.2/90.2 MB 48.3 MB/s  0:00:01
+Downloading nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 16.4 MB/s  0:00:00
+Downloading nvidia_cufft-12.0.0.61-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (214.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 214.1/214.1 MB 23.0 MB/s  0:00:09
+Downloading nvidia_cufile-1.15.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 5.5 MB/s  0:00:00
+Downloading nvidia_curand-10.4.0.35-py3-none-manylinux_2_27_x86_64.whl (59.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.5/59.5 MB 59.1 MB/s  0:00:01
+Downloading nvidia_cusolver-12.0.4.66-py3-none-manylinux_2_27_x86_64.whl (200.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.9/200.9 MB 21.4 MB/s  0:00:09
+Downloading nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (145.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 145.9/145.9 MB 44.9 MB/s  0:00:03
+Downloading nvidia_nvjitlink-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (40.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.7/40.7 MB 53.6 MB/s  0:00:00
+Downloading nvidia_nvtx-13.0.85-py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.whl (148 kB)
+Downloading setuptools-81.0.0-py3-none-any.whl (1.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 13.4 MB/s  0:00:00
+Downloading transformers-5.7.0-py3-none-any.whl (10.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.5/10.5 MB 26.1 MB/s  0:00:00
+Downloading huggingface_hub-1.12.2-py3-none-any.whl (647 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 647.8/647.8 kB 13.6 MB/s  0:00:00
+Downloading hf_xet-1.4.3-cp37-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 11.6 MB/s  0:00:00
+Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 22.1 MB/s  0:00:00
+Downloading opencv_python_headless-4.13.0.92-cp37-abi3-manylinux_2_28_x86_64.whl (60.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.4/60.4 MB 58.0 MB/s  0:00:01
+Downloading numpy-2.4.4-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 43.2 MB/s  0:00:00
+Downloading playwright-1.59.0-py3-none-manylinux1_x86_64.whl (47.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 47.2/47.2 MB 50.2 MB/s  0:00:00
+Downloading greenlet-3.5.0-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (660 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 660.9/660.9 kB 12.8 MB/s  0:00:00
+Downloading pyee-13.0.1-py3-none-any.whl (15 kB)
+Downloading camoufox-0.4.11-py3-none-any.whl (71 kB)
+Downloading browserforge-1.2.4-py3-none-any.whl (37 kB)
+Downloading mitmproxy-12.2.2-py3-none-any.whl (1.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 MB 20.6 MB/s  0:00:00
+Downloading aioquic-1.2.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 10.0 MB/s  0:00:00
+Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+Downloading asgiref-3.11.0-py3-none-any.whl (24 kB)
+Downloading bcrypt-5.0.0-cp39-abi3-manylinux_2_34_x86_64.whl (278 kB)
+Downloading brotli-1.2.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 22.6 MB/s  0:00:00
+Downloading cryptography-46.0.7-cp311-abi3-manylinux_2_34_x86_64.whl (4.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 13.0 MB/s  0:00:00
+Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading h2-4.3.0-py3-none-any.whl (61 kB)
+Downloading hpack-4.1.0-py3-none-any.whl (34 kB)
+Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+Downloading kaitaistruct-0.11-py2.py3-none-any.whl (11 kB)
+Downloading ldap3-2.9.1-py2.py3-none-any.whl (432 kB)
+Downloading mitmproxy_rs-0.12.9-cp312-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 36.3 MB/s  0:00:00
+Downloading mitmproxy_linux-0.12.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 30.9 MB/s  0:00:00
+Downloading msgpack-1.1.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (419 kB)
+Downloading publicsuffix2-2.20191221-py2.py3-none-any.whl (89 kB)
+Downloading pylsqpack-0.3.24-cp310-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (250 kB)
+Downloading pyopenssl-25.3.0-py3-none-any.whl (57 kB)
+Downloading pyparsing-3.3.2-py3-none-any.whl (122 kB)
+Downloading pyperclip-1.11.0-py3-none-any.whl (11 kB)
+Downloading ruamel_yaml-0.19.1-py3-none-any.whl (118 kB)
+Downloading sortedcontainers-2.4.0-py2.py3-none-any.whl (29 kB)
+Downloading tornado-6.5.5-cp39-abi3-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (447 kB)
+Downloading urwid-3.0.5-py3-none-any.whl (296 kB)
+Downloading wsproto-1.3.2-py3-none-any.whl (24 kB)
+Downloading zstandard-0.25.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (5.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.6/5.6 MB 35.0 MB/s  0:00:00
+Downloading pybase64-1.4.3-cp314-cp314-manylinux1_x86_64.manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_5_x86_64.whl (71 kB)
+Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+Downloading cffi-2.0.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (219 kB)
+Downloading click-8.3.3-py3-none-any.whl (110 kB)
+Downloading filelock-3.29.0-py3-none-any.whl (39 kB)
+Downloading fsspec-2026.3.0-py3-none-any.whl (202 kB)
+Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+Downloading markupsafe-3.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (23 kB)
+Downloading networkx-3.6.1-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 7.2 MB/s  0:00:00
+Downloading packaging-26.2-py3-none-any.whl (100 kB)
+Downloading pyasn1-0.6.3-py3-none-any.whl (83 kB)
+Downloading pyyaml-6.0.3-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (794 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 794.2/794.2 kB 4.7 MB/s  0:00:00
+Downloading regex-2026.4.4-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (800 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 800.6/800.6 kB 5.4 MB/s  0:00:00
+Downloading safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (507 kB)
+Downloading service_identity-24.2.0-py3-none-any.whl (11 kB)
+Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 35.4 MB/s  0:00:00
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 9.5 MB/s  0:00:00
+Downloading tqdm-4.67.3-py3-none-any.whl (78 kB)
+Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Downloading wcwidth-0.6.0-py3-none-any.whl (94 kB)
+Downloading werkzeug-3.1.8-py3-none-any.whl (226 kB)
+Downloading anyio-4.13.0-py3-none-any.whl (114 kB)
+Downloading apify_fingerprint_datapoints-0.12.0-py3-none-any.whl (643 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 643.8/643.8 kB 2.9 MB/s  0:00:00
+Downloading argon2_cffi_bindings-25.1.0-cp39-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (87 kB)
+Downloading language_tags-1.2.0-py3-none-any.whl (213 kB)
+Downloading lxml-6.1.0-cp314-cp314-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 32.4 MB/s  0:00:00
+Downloading orjson-3.11.8-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (133 kB)
+Downloading platformdirs-4.9.6-py3-none-any.whl (21 kB)
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+Downloading pycparser-3.0-py3-none-any.whl (48 kB)
+Downloading screeninfo-0.8.1-py3-none-any.whl (12 kB)
+Downloading typer-0.25.0-py3-none-any.whl (55 kB)
+Downloading annotated_doc-0.0.4-py3-none-any.whl (5.3 kB)
+Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 6.0 MB/s  0:00:00
+Downloading markdown_it_py-4.0.0-py3-none-any.whl (87 kB)
+Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Downloading shellingham-1.5.4-py2.py3-none-any.whl (9.8 kB)
+Downloading ua_parser-1.0.2-py3-none-any.whl (31 kB)
+Downloading ua_parser_builtins-202603-py3-none-any.whl (89 kB)
+Installing collected packages: sortedcontainers, pyperclip, publicsuffix2, nvidia-cusparselt-cu13, mpmath, language-tags, cuda-toolkit, Brotli, zstandard, wcwidth, ua-parser-builtins, typing-extensions, triton, tqdm, tornado, sympy, shellingham, setuptools, screeninfo, safetensors, ruamel.yaml, regex, pyyaml, pyparsing, pylsqpack, pygments, pycparser, pybase64, pyasn1, platformdirs, packaging, orjson, nvidia-nvtx, nvidia-nvshmem-cu13, nvidia-nvjitlink, nvidia-nccl-cu13, nvidia-curand, nvidia-cufile, nvidia-cuda-runtime, nvidia-cuda-nvrtc, nvidia-cuda-cupti, nvidia-cublas, numpy, networkx, msgpack, mitmproxy-linux, mdurl, markupsafe, lxml, kaitaistruct, itsdangerous, hyperframe, hpack, hf-xet, h11, greenlet, fsspec, filelock, cuda-pathfinder, click, blinker, bcrypt, attrs, asgiref, apify_fingerprint_datapoints, anyio, annotated-doc, wsproto, werkzeug, urwid, ua_parser, pyee, pyasn1-modules, opencv-python-headless, nvidia-cusparse, nvidia-cufft, nvidia-cudnn-cu13, mitmproxy-rs, markdown-it-py, ldap3, jinja2, httpcore, h2, cuda-bindings, cffi, browserforge, rich, playwright, nvidia-cusolver, httpx, flask, cryptography, argon2-cffi-bindings, typer, service-identity, pyOpenSSL, camoufox, argon2-cffi, torch, huggingface-hub, aioquic, tokenizers, mitmproxy, transformers
+
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+dpkg-preconfigure: unable to re-open stdin: 
+  WARNING: The scripts proton and proton-viewer are installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script tqdm is installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script isympy is installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script pygmentize is installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The script pybase64 is installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+  WARNING: The scripts f2py and numpy-config are installed in '/home/tinyagent/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
+ERROR: Could not install packages due to an OSError: [Errno 28] No space left on device
+
