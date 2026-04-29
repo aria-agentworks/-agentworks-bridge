@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import subprocess
+import os
+import sys
+
+# Re-install just in case
+os.system('pip3 install -q browser-harness cdp-use --break-system-packages')
+
+print("=== Maya Growth: Mission 01 (Remote Browser) ===")
+
+# Test 1: Verify browser-harness CLI is available
+print("Testing browser-harness CLI...")
+try:
+    result = subprocess.run(
+        ['which', 'browser-harness'],
+        capture_output=True,
+        text=True,
+        timeout=10
+    )
+    if result.returncode == 0:
+        BH_PATH = result.stdout.strip()
+        print(f"✅ browser-harness found at: {BH_PATH}")
+    else:
+        print("❌ browser-harness binary not found")
+        print(f"Attempting to find in PATH...")
+        BH_PATH = None
+except Exception as e:
+    print(f"Error checking browser-harness: {e}")
+
+# Test 2: Connect to Azure VM's remote Chrome
+if BH_PATH:
+    print("\n=== Connecting to Azure VM Remote Browser ===")
+    print("Target: http://4.213.114.95:9222")
+    
+    MISSION_CMD = "set_cdp_url('http://4.213.114.95:9222'); goto_url('https://www.instagram.com/natural_beauty_shoutout/'); import time; time.sleep(5); print(page_info())"
+    
+    try:
+        print(f"Running: {BH_PATH} -c \"{MISSION_CMD}\"")
+        result = subprocess.run(
+            [BH_PATH, '-c', MISSION_CMD],
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+        print("=== Remote Browser Test Result ===")
+        print("STDOUT:")
+        print(result.stdout)
+        if result.stderr:
+            print("STDERR:")
+            print(result.stderr)
+    except Exception as e:
+        print(f"Error executing browser-harness: {e}")
+else:
+    print("\n❌ browser-harness not found - installation may have failed")
+
+print("\n=== Mission Test Complete ===")
