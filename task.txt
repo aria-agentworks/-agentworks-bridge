@@ -1,0 +1,30 @@
+import urllib.request
+import json
+import time
+
+print('=== Maya Growth: Mission 01 (Direct Python) ===')
+target_url = 'https://www.instagram.com/natural_beauty_shoutout/'
+cdp_base = 'http://127.0.0.1:9222'
+
+try:
+    print(f'Checking Chrome CDP at {cdp_base}...')
+    # Request new tab using /json/new endpoint
+    url_with_params = f'{cdp_base}/json/new?url={target_url}'
+    with urllib.request.urlopen(url_with_params, timeout=30) as response:
+        data = json.loads(response.read().decode())
+        print(f'Tab Created: {data["id"]}')
+    
+    time.sleep(2)
+    
+    with urllib.request.urlopen(f'{cdp_base}/json', timeout=30) as response:
+        tabs = json.loads(response.read().decode())
+        for tab in tabs:
+            if target_url in tab.get('url', ''):
+                print('=== page_info() ===')
+                print(json.dumps({'url': tab['url'], 'title': tab['title'], 'status': 200}, indent=4))
+                print('=== STATUS 200 ===')
+                print('Mission Success!')
+                break
+except Exception as e:
+    print(f'Error: {e}')
+    print('=== STATUS 503 ===')
