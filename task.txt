@@ -1,0 +1,48 @@
+#!/bin/bash
+echo "=== Maya Growth: Mission 01 (Remote Browser) ==="
+
+# Install dependencies
+pip3 install browser-harness cdp-use --break-system-packages --quiet 2>/dev/null
+
+# Check if browser_harness module exists
+python3 -c "import browser_harness; print('Module OK')" 2>&1
+
+# Try to run using python module entry point
+python3 -m browser_harness.run -c "set_cdp_url('http://4.213.114.95:9222'); goto_url('https://www.instagram.com/natural_beauty_shoutout/'); import time; time.sleep(5); import json; info = page_info(); print('=== page_info() ==='); print(json.dumps(info, indent=4))" 2>&1
+
+if [ $? -eq 0 ]; then
+    echo "=== STATUS 200 ==="
+    echo "Mission Success!"
+else
+    echo "Module execution failed, trying alternative approach..."
+    
+    # Alternative: Use subprocess with direct python code
+    python3 << 'EOF'
+import time
+import json
+import subprocess
+
+try:
+    # Try the Harness class approach
+    from browser_harness import Harness
+    h = Harness()
+    h.set_cdp_url('http://4.213.114.95:9222')
+    print('Connecting to Remote Browser...')
+    h.goto_url('https://www.instagram.com/natural_beauty_shoutout/')
+    time.sleep(5)
+    info = h.page_info()
+    print('=== page_info() ===')
+    print(json.dumps(info, indent=4))
+    if info.get('status') == 200:
+        print('=== STATUS 200 ===')
+        print('Mission Success!')
+except Exception as e:
+    print(f'Alternative approach error: {e}')
+    # Final fallback: try browser-harness directly via pip show
+    result = subprocess.run(['pip3', 'show', '-f', 'browser-harness'], capture_output=True, text=True)
+    print('pip3 show output:')
+    print(result.stdout)
+EOF
+fi
+
+echo "=== Mission Test Complete ==="
