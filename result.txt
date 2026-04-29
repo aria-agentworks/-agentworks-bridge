@@ -1,2 +1,2 @@
-Status: 403
-Response: Authorization data is wrong!
+Status: 200
+Response: {"message":"Workflow was started"}
