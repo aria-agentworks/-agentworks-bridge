@@ -1,9 +1,1 @@
-Hostname: aa-maya-vm
-Current User: tinyagent
-IP Address: 10.0.0.4 172.17.0.1 172.18.0.1 172.19.0.1 
-Sudo Test:
-no root
-Docker Test:
-Docker version 29.4.1, build 055a478
-=== END IDENTITY CHECK ===
-/bin/sh: 1: ===: not found
+/bin/sh: 1: Syntax error: "(" unexpected
