@@ -1,0 +1,17 @@
+#!/bin/bash
+echo "Starting Browser Harness Installation..."
+sudo apt-get update
+sudo apt-get install -y wget gnupg
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+sudo apt-get update
+sudo apt-get install -y google-chrome-stable chromium-browser
+
+# Install browser-harness and dependencies
+pip install browser-harness cdp-use --break-system-packages
+
+# Start Chrome in headless mode with remote debugging in the background
+nohup google-chrome-stable --headless --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-profile --no-sandbox > /tmp/chrome.log 2>&1 &
+
+echo "Installation complete. Chrome started on port 9222."
+ps aux | grep chrome
