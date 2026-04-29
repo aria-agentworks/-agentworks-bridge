@@ -1,8 +1,19 @@
-=== GHOST PROTOCOL: INITIATING ===
-Installing/Verifying Tor...
+=== GHOST PROTOCOL: INITIATING RECOVERY ===
+Restarting Tor service...
+Waiting for Tor port...
+Tor SOCKS port 9050 is listening.
 Verifying Ghost Exit IP...
-Exit IP (via Tor): 4.213.114.95
-=== GHOST PROTOCOL: HANDSHAKE TEST ===
-Ghost Status: 200
-Status: Ghost Success/Verified
-=== STATUS 200 ===
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+Waiting for circuit... (<urlopen error unknown url type: socks5h>)
+FATAL: Ghost Protocol failed to establish non-attributable circuit.
+=== STATUS 503 ===
