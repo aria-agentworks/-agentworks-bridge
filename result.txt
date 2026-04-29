@@ -1,1 +1,6 @@
-SUCCESS: Mission accomplished!
+=== Maya Growth: Mission 01 (Direct CDP) ===
+Installed cdp-use and browser-harness
+Traceback (most recent call last):
+  File "/home/runner/work/-agentworks-bridge/-agentworks-bridge/task_cdp.py", line 13, in <module>
+    from cdp_use import Browser
+ImportError: cannot import name 'Browser' from 'cdp_use' (/opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages/cdp_use/__init__.py)
