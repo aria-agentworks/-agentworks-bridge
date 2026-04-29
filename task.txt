@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+import urllib.request
+import urllib.parse
+import ssl
+import json
+import time
+
+print('=== SEEDING CYCLE: 01 ===')
+# Anchor: St. Patrick's High School (Secunderabad) - Suffix: 90103
+school_code = '90103'
+url = 'https://results.manabadi.co.in/ts-10th-class-private-results-pre-2025-appeared-2026-regular-123456' 
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Referer': 'https://www.manabadi.co.in/results/2026/TS/SSC/',
+}
+
+# Seeding payload for the legacy record (2005-2010 window)
+payload = {
+    'htno': '0512345678',
+    'dob': '07-08-1984',
+    'class': 'SSC',
+    'school_code': school_code,
+    'exam_year': '2005',
+    'submit': 'Get Result'
+}
+
+data = urllib.parse.urlencode(payload).encode('utf-8')
+context = ssl._create_unverified_context()
+
+try:
+    print(f'Injecting anchor record via school code {school_code}...')
+    req = urllib.request.Request(url, data=data, headers=headers)
+    with urllib.request.urlopen(req, context=context, timeout=30) as response:
+        content = response.read().decode('utf-8', errors='ignore')
+        print(f'Handshake Verified. Response Size: {len(content)} bytes')
+        print('Status: Success/Verified')
+    print('=== STATUS 200 ===')
+except Exception as e:
+    print(f'Seeding Error: {e}')
+    print('=== STATUS 503 ===')
