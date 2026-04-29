@@ -1,4 +1,3 @@
-=== HEARTBEAT V2 ===
+=== WORKER IS ALIVE ===
 df -h /
-Date: $(date)
-echo "Worker status check"
+echo "Free space: $(df -h / | tail -1 | awk '{print $4}')"
