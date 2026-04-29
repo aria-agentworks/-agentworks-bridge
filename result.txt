@@ -1,32 +1,18 @@
-=== Maya Growth: Mission 01 (Module Discovery) ===
-Installing...
+=== Maya Growth: Mission 01 (Reading Module Contents) ===
 
-1. Finding module locations...
-   browser_harness: /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages/browser_harness
-   cdp_use: /opt/hostedtoolcache/Python/3.14.4/x64/lib/python3.14/site-packages/cdp_use
-
-2. Inspecting browser_harness module...
-   Files in browser_harness:
-total 16
-drwxrwxrwx+  3 runner runner 4096 Apr 29 09:21 .
-drwxrwxrwx+ 30 runner packer 4096 Apr 29 09:21 ..
--rw-rw-rw-+  1 runner runner   22 Apr 29 09:21 __init__.py
-drwxrwxrwx+  2 runner runner 4096 Apr 29 09:21 __pycache__
+1. Contents of browser_harness/__init__.py:
+============================================================
+__version__ = "0.0.1"
 
 
-3. Inspecting cdp_use module...
-   Files in cdp_use:
-total 36
-drwxrwxrwx+  4 runner runner  4096 Apr 29 09:21 .
-drwxrwxrwx+ 30 runner packer  4096 Apr 29 09:21 ..
--rw-rw-rw-+  1 runner runner    62 Apr 29 09:21 __init__.py
-drwxrwxrwx+  2 runner runner  4096 Apr 29 09:21 __pycache__
-drwxrwxrwx+ 57 runner runner  4096 Apr 29 09:21 cdp
--rw-rw-rw-+  1 runner runner 14845 Apr 29 09:21 client.py
--rw-rw-rw-+  1 runner runner     0 Apr 29 09:21 py.typed
+2. Contents of cdp_use/__init__.py:
+============================================================
+from cdp_use.client import CDPClient
+
+__all__ = ["CDPClient"]
 
 
-=== Discovery Complete ===
+=== Content Read Complete ===
 
 [notice] A new release of pip is available: 26.0.1 -> 26.1
 [notice] To update, run: pip install --upgrade pip
