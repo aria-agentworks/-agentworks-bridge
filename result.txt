@@ -1,19 +1,10 @@
-=== GHOST PROTOCOL: INITIATING RECOVERY ===
-Restarting Tor service...
-Waiting for Tor port...
-Tor SOCKS port 9050 is listening.
-Verifying Ghost Exit IP...
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-Waiting for circuit... (<urlopen error unknown url type: socks5h>)
-FATAL: Ghost Protocol failed to establish non-attributable circuit.
+=== GHOST PROTOCOL: HARDENED TUNNEL ===
+Installing PySocks...
+Restarting Tor...
+SOCKS5 Tunnel forced at socket level.
+Verifying exit node. Azure IP: 4.213.114.95
+Current Exit IP: 23.137.254.25
+GHOST PROTOCOL VERIFIED: IP is non-attributable.
+=== GHOST PROTOCOL: SECURE HANDSHAKE ===
+Handshake failed: <urlopen error Socket error: timed out>
 === STATUS 503 ===
