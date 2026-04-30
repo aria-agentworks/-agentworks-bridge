@@ -1,4 +1,4 @@
-name: DO Bridge - Zero-Step Final
+name: DO Bridge - Zer0-Step Final
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
       - name: Create DigitalOcean Droplet
         id: create-droplet
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dddad1dc8507d3e3c578dc4ef7
+          DO_TOKEN: ${{ secrets.DO_TOKEN }}
         run: |
           TOKEN="${{ env.GITHUB_TOKEN }}"
           curl -s -X POST https://api.digitalocean.com/v2/droplets \
@@ -38,13 +38,13 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data" : "LyY2WVcxc2N6SkdhR015TW5saFYyUnNTVWMwYTFwWE5UQmtTRkpzVEZWa2QyUnRPWGxNYmtwb1l6Sm5QVDA9Ig
-              }'
-            sleep 120
+              "user_data" : "LyY2WVcxYzJONlNrZGhSMDE1VFc1c2FGWXlVbk5UVldNd1lURndXRTVVUW10VFJrcHpWRVpXYTJReVVuUlBXR3hOWW10d2IxbDZTbTVRVkRBOUln
+              f'
+          sleep 120
 
       - name: Get Droplet IP
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dddad1dc8507d3e3c578dc4ef7
+          DO_TOKEN: ${{ secrets.DO_TOKEN }}
         run: |
           IP=$(curl -s -X GET "https://api.digitalocean.com/v2/droplets?page=1&per_page=100" -H "Authorization: Bearer $DO_TOKEN" | python3 -c "import sys, json; d=json.load(sys.stdin); print([x['public_ips'][0] for x in d['droplets'] if x['name']=='aria-host-droplet'][0])")
           echo "IP=$IP" >> $GITHUB_ENV
@@ -90,7 +90,7 @@ jobs:
           EOF
         env:
           RUNNER_REGISTRATION_TOKEN: ${{ env.RUNNER_REGISTRATION_TOKEN }}
-          SSH_KEY_PATH: $SSH_KEY_PATH
+          SSH_KEY_PATH: $SSH_KEY_PATH (
 
       - name: Write Results
         run: |
