@@ -59,7 +59,7 @@
             position: relative;
         }
         
-        .nav-links a::after {
+        .nav-links a:after {
             content: '';
             position: absolute;
             bottom: -5px;
@@ -70,7 +70,7 @@
             transition: width 0.3s ease;
         }
         
-        .nav-links a:hover::after {
+        .nav-links a:hover:after {
             width: 100%;
         }
         
@@ -103,21 +103,20 @@
             overflow: hidden;
         }
         
-        .hero::before {
+        .hero:before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 50px,
-                    rgba(0, 255, 65, 0.02) 50px,
-                    rgba(0, 255, 65, 0.02) 51px
-                );
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 50px,
+                rgba(0, 255, 65, 0.02) 50px,
+                rgba(0, 255, 65, 0.02) 51px
+            );
             pointer-events: none;
         }
         
@@ -143,7 +142,7 @@
         
         .hero p {
             font-size: 1.3rem;
-            color: #88aa88;
+            color: #88a888;
             margin-bottom: 60px;
             letter-spacing: 0.5px;
             font-weight: 300;
@@ -263,7 +262,7 @@
         .price span {
             font-size: 1rem;
             font-weight: 400;
-            color: #88aa88;
+            color: #88a888;
         }
         
         .tier-features {
@@ -282,10 +281,168 @@
             letter-spacing: 0.5px;
         }
         
-        .tier-feature::before {
+        .tier-feature:before {
             content: '✓';
             color: #00ff41;
             font-weight: 700;
+        }
+        
+        /* Premium Forensics Tier */
+        .premium-forensics-section {
+            margin-top: 80px;
+            padding: 60px 40px;
+            background: linear-gradient(145deg, #000000 0%, #050505 50%, #000000 100%);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0, 255, 65, 0.15),
+                        inset 0 0 40px rgba(0, 255, 65, 0.05);
+        }
+        
+        .premium-forensics-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+            box-shadow: 0 0 20px #00ff41;
+            animation: border-float 4s ease-in-out infinite;
+        }
+        
+        @keyframes border-float {
+            0%, 100% { opacity: 0.5; transform: scaleX(0.85); }
+            50% { opacity: 1; transform: scaleX(1); }
+        }
+        
+        .premium-forensics-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.5), transparent);
+        }
+        
+        .premium-forensics-section .premium-forensics-tier {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 50px;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.5) 0%, rgba(20, 20, 20, 0.5) 100%);
+            border: 2px solid rgba(0, 255, 65, 0.8);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.3),
+                        inset 0 0 20px rgba(0, 255, 65, 0.1);
+            animation: forensics-glow 3s ease-in-out infinite;
+        }
+        
+        .premium-forensics-tier::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(0, 255, 65, 0.03) 50%, rgba(0, 0, 0, 0) 100%);
+            animation: glow-pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes glow-pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes forensics-glow {
+            0%, 100% { border-color: rgba(0, 255, 65, 0.8); box-shadow: 0 0 30px rgba(0, 255, 65, 0.2); }
+            50% { border-color: rgba(0, 255, 65, 1); box-shadow: 0 0 50px rgba(0, 255, 65, 0.4), inset 0 0 30px rgba(0, 255, 65, 0.1); }
+        }
+        
+        .premium-badge {
+            background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
+            color: #000000;
+            padding: 10px 24px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .premium-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .premium-price span {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #cccccc;
+            text-shadow: none;
+        }
+        
+        .premium-features {
+            display: flex;
+            gap: 24px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .premium-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        .premium-feature:before {
+            content: '✦';
+            color: #00ff41;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
+        }
+        
+        .request-access-btn {
+            margin-left: 20px;
+            background: linear-gradient(135deg, #00ff41 0%, #00cc33 100%);
+            border: none;
+            color: #000000;
+            padding: 14px 36px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            border-radius: 4px;
+            box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .request-access-btn:hover {
+            background: linear-gradient(135deg, #ffffff 0%, #ccffcc 100%);
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.6),
+                        0 0 60px rgba(0, 255, 65, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .request-access-btn:active {
+            transform: translateY(0);
         }
         
         /* Stats Section */
@@ -310,7 +467,7 @@
         
         .stat-label {
             font-size: 0.9rem;
-            color: #88aa88;
+            color: #88a888;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-top: 10px;
@@ -348,6 +505,22 @@
             .nav-links {
                 display: none;
             }
+            
+            .premium-forensics-section .premium-forensics-tier {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .premium-features {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .request-access-btn {
+                margin-left: 0;
+                margin-top: 20px;
+                width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
@@ -366,6 +539,22 @@
             
             .price {
                 font-size: 1.5rem;
+            }
+            
+            .premium-forensics-section {
+                padding: 40px 20px;
+            }
+            
+            .premium-forensics-section .premium-forensics-tier {
+                padding: 20px;
+            }
+            
+            .premium-price {
+                font-size: 2rem;
+            }
+            
+            .premium-feature {
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -388,8 +577,8 @@
     <section class="hero">
         <div class="hero-content">
             <h1>
-                Protect Your Infrastructure from the 
-                <span class="highlight">Next Cl0p Strike</span>
+                Protect Your Infrastructure from the
+                <span class="highlight">Next C0rp Strike</span>
             </h1>
             <p>
                 Enterprise-grade domain exposure monitoring and threat intelligence for modern security teams
@@ -397,19 +586,19 @@
             
             <div class="search-container">
                 <div class="search-box">
-                    <span class="search-icon">⟳</span>
+                    <span class="search-icon">⌕</span>
                     <input type="text" 
-                           class="search-input" 
-                           placeholder="Enter domain to check exposure..." 
-                           id="domainInput">
+                        class="search-input" 
+                        placeholder="Enter domain to check exposure..." 
+                        id="domainInput">
                     <button class="search-btn">Check Exposure</button>
                 </div>
             </div>
             
             <div class="subscription-tier">
-                <span class="tier-badge">ENTERPRISE</span>
+                <span class="tier-badge">ENTERRPRISE</span>
                 <div>
-                    <div class="price">$5,000<span style="font-size: 1rem;">/year</span></div>
+                    <div class="price">$5,000<span style="font-size: 1rem">/year</span></div>
                     <div class="tier-features">
                         <span class="tier-feature">Unlimited Exposure Reports</span>
                         <span class="tier-feature">Remediation Intelligence</span>
@@ -417,6 +606,23 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Digital Forensics Retainer Service Section -->
+            <div class="premium-forensics-section">
+                <div class="premium-forensics-tier">
+                    <span class="premium-badge">PREMIUM FORENSICS</span>
+                    <div>
+                        <div class="premium-price">$10,000<span style="font-size: 1.2rem">/year</span></div>
+                        <div class="premium-features">
+                            <span class="premium-feature">Immediate Incident Response</span>
+                            <span class="premium-feature">Post-Breach Salvage</span>
+                            <span class="premium-feature">Evidence Recovery</span>
+                        </div>
+                    </div>
+                    <button class="request-access-btn">Request Access</button>
+                </div>
+            </div>
+            
         </div>
     </section>
     
