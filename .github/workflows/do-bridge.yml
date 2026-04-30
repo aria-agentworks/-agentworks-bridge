@@ -29,8 +29,11 @@ jobs:
         env:
           DO_TOKEN: ${{ secrets.DO_TOKEN }}
         run: |
-          TOKEN="${{ env.GITHUB_TOKEN }}"
-          curl -s -X POST https://api.digitalocean.com/v2/droplets \
+          set -e
+          echo "Creating DigitalOcean droplet: aria-host-droplet"
+          echo "DO Token configured: $([[ -n \"$DO_TOKEN\" ]] && echo 'YES' || echo 'NO')"
+          
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST https://api.digitalocean.com/v2/droplets \
             -H "Authorization: Bearer $DO_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
@@ -38,19 +41,77 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data" : "LyY2WVcxYzJONlNrZGhSMDE1VFc1c2FGWXlVbk5UVldNd1lURndXRTVVUW10VFJrcHpWRVpXYTJReVVuUlBXR3hOWW10d2IxbDZTbTVRVkRBOUln
-              f'
+              "user_data" : "LyY2WVZcYXpKONLnrZGHsMDD1VFc1c2FGWXlVbk5u1dXRXuVW10VFJkeHVWbFJrY1FWQ1FwWFZJ
+              RGVWVXVsbEJSM2hPV1cxMGQySXhiRFpUYlRWUlZrUkJPVWxu
+              '
+            )
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "HTTP Status: $HTTP_STATUS"
+          
+          if [[ "$HTTP_STATUS" != "201" && "$HTTP_STATUS" != "202" ]]; then
+            echo "ERROR: Failed to create droplet. HTTP Status: $HTTP_STATUS"
+            echo "Response: $BODY" >&2
+            exit 1
+          fi
+          
+          echo "SUCCESS: Droplet creation initiated (HTTP $HTTP_STATUS)"
+          echo "$BODY" | jq -r '.action?.id' > droplet_action_id.txt || true
+          
+          echo "Waiting for droplet to be ready (120 seconds)..."
           sleep 120
 
       - name: Get Droplet IP
         env:
           DO_TOKEN: ${{ secrets.DO_TOKEN }}
         run: |
-          IP=$(curl -s -X GET "https://api.digitalocean.com/v2/droplets?page=1&per_page=100" -H "Authorization: Bearer $DO_TOKEN" | python3 -c "import sys, json; d=json.load(sys.stdin); print([x['public_ips'][0] for x in d['droplets'] if x['name']=='aria-host-droplet'][0])")
-          echo "IP=$IP" >> $GITHUB_ENV
+          set -e
+          echo "Fetching droplet IP with retry logic..."
+          
+          MAX_RETRIES=18
+          RETRY_INTERVAL=10
+          SUCCESS=false
+          
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i/$MAX_RETRIES..."
+            
+            RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X GET "https://api.digitalocean.com/v2/droplets?page=1&per_page=100" \
+              -H "Authorization: Bearer $DO_TOKEN")
+            
+            HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | sed '$d')
+            
+            if [[ "$HTTP_STATUS" != "200" ]]; then
+              echo "WARNING: HTTP Status $HTTP_STATUS, retrying..."
+              sleep $RETRY_INTERVAL
+              continue
+            fi
+            
+            # Check if droplet exists and has public IP
+            DROPLET_FOUND=$(echo "$BODY" | jq ".droplets[] | select(.name == 'aria-host-droplet') | .public_ips[0] // empty")
+            
+            if [[ -n "$DROPLET_FOUND" && "$DROPLET_FOUND" != "null" ]]; then
+              IP="$DROPLET_FOUND"
+              echo "SUCCESS: Found droplet IP: $IP"
+              echo "IP=$IP" >> $GITHUB_ENV
+              SUCCESS=true
+              break
+            fi
+            
+            echo "Droplet not found yet, waiting $RETRY_INTERVAL seconds..."
+            sleep $RETRY_INTERVAL
+          done
+          
+          if [[ "$SUCCESS" != "true" ]]; then
+            echo "ERROR: Could not find droplet IP after $((MAX_RETRIES * RETRY_INTERVAL)) seconds"
+            echo "Last response: $BODY" >&2
+            exit 1
+          fi
 
       - name: Setup Docker on Droplet
         run: |
+          set -e
           echo "Setting up Docker on droplet IP: $IP"
           SSH_KEY=$(cat $SSH_KEY_PATH)
           ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
@@ -64,6 +125,7 @@ jobs:
 
       - name: Fetch GitHub Actions Runner Registration Token
         run: |
+          set -e
           echo "Installing jq for JSON parsing"
           apt-get install -y jq
           echo "Fetching fresh registration token from GitHub API"
@@ -73,6 +135,7 @@ jobs:
 
       - name: Download GitHub Actions Runner
         run: |
+          set -e
           echo "Downloading GitHub Actions Runner on droplet: $IP"
           ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
             cd /home/ubuntu
@@ -82,6 +145,7 @@ jobs:
 
       - name: Configure and Register GitHub Actions Runner
         run: |
+          set -e
           echo "Registering runner on droplet: $IP"
           ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
             cd /home/ubuntu/actions-runner
@@ -90,7 +154,7 @@ jobs:
           EOF
         env:
           RUNNER_REGISTRATION_TOKEN: ${{ env.RUNNER_REGISTRATION_TOKEN }}
-          SSH_KEY_PATH: $SSH_KEY_PATH (
+          SSH_KEY_PATH: $SSH_KEY_PATH
 
       - name: Write Results
         run: |
@@ -102,6 +166,7 @@ jobs:
 
       - name: Commit and push results
         run: |
+          set -e
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git add result.txt
