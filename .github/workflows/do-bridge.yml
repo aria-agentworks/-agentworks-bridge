@@ -27,7 +27,7 @@ jobs:
       - name: Create DigitalOcean Droplet
         id: create-droplet
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dad1dc8507d3e3c578dc4ef7
+          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dddad1dc8507d3e3c578dc4ef7
         run: |
           TOKEN="${{ env.GITHUB_TOKEN }}"
           curl -s -X POST https://api.digitalocean.com/v2/droplets \
@@ -38,16 +38,50 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data" : "LyEvYmluL2Jhc2gKc2V0IC1lCmFwdC1nZXQgdXBkYXRlCmFwdC1nZXQgaW5zdGFsbCAteSBkb2NrZXIuaW8gZ2l0IHB5dG9uMy1waXBjdXJsIHdnZXQKY2QgL2hvbWUvdWJ1bnR1Cm1rZGlyIGFjdGlvbnMtcnVubmVyCmNkIGFjdGlvbnMtcnVubmVyCmN1cmwgLU8gaHR0cHM6Ly9naXRodWIuY29tL2FjdGlvbnMtcnVubmVyL3JlbGVhc2VzL2Rvd25sb2FkL3YyLjMxNi4xL2FjdGlvbnMtcnVubmVyLWxpbnV4LXg2NC0yLjMxNi4xLnRhci5negp0YXIgeGpmIC4vYWN0aW9ucy1ydW5uZXItbGludXgteDY0LTIuMzE2LjEudGFyLmd6Ci4vY29uZmlnLnNoIC0tdXJsIGh0dHBzOi8vZ2l0aHViLmNvbS9hcmlhLWFnZW50d29ya3MvLWFnZW50d29ya3MtYnJpZGdlIC0tbmFtZSBhcmlhLWhvc3QtcnVubmVyIC0tdW5hdHRlbmRlZAouL3N2Yy5zaCBpbnN0YWxsCnN5c3RlbWN0bCBlbmFibGUgYWN0aW9ucy1ydW5uZXIKc3lzdGVtY3RsIHN0YXJ0IGFjdGlvbnMtcnVubmVyCg=="
+              "user_data" : "LyF2WW1sczJGaGMyRnlhV2RsSUc0a1pXNTBkSFJsTFVkd2RtOXlMbkpoYzJnPT0="
             }'
           sleep 120
 
       - name: Get Droplet IP
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dad1dc8507d3e3c578dc4ef7
+          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dddad1dc8507d3e3c578dc4ef7
         run: |
           IP=$(curl -s -X GET "https://api.digitalocean.com/v2/droplets?page=1&per_page=100" -H "Authorization: Bearer $DO_TOKEN" | python3 -c "import sys, json; d=json.load(sys.stdin); print([x['public_ips'][0] for x in d['droplets'] if x['name']=='aria-host-droplet'][0])")
           echo "IP=$IP" >> $GITHUB_ENV
+
+      - name: Setup Docker on Droplet
+        run: |
+          echo "Setting up Docker on droplet IP: $IP"
+          SSH_KEY=$(cat $SSH_KEY_PATH)
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          usermod -aG docker ubuntu
+          systemctl enable docker
+          systemctl start docker
+          echo "Docker installed successfully"
+          EOF
+
+      - name: Download GitHub Actions Runner
+        run: |
+          echo "Downloading GitHub Actions Runner on droplet: $IP"
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
+          cd /home/ubuntu
+          curl -L -o actions-runner-linux-x64.tar.gz https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz
+          tar xzf actions-runner-linux-x64.tar.gz
+          EOF
+
+      - name: Configure and Register GitHub Actions Runner
+        run: |
+          echo "Registering runner with droplet: $IP"
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
+          cd /home/ubuntu/actions-runner
+          ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $RUNNER_REGISTRATION_TOKEN --name aria-runner --unattended
+          echo "Runner configured and registered"
+          EOF
+        env:
+          RUNNER_REGISTRATION_TOKEN: ${{ secrets.RUNNER_REGISTRATION_TOKEN }}
+          SSH_KEY_PATH: $SSH_KEY_PATH
 
       - name: Write Results
         run: |
@@ -55,12 +89,12 @@ jobs:
           echo "Droplet Name: aria-host-droplet" >> result.txt
           echo "Public IP: $IP" >> result.txt
           echo "=== READY ===" >> result.txt
-          echo "=== GPTL-TEAMS DEPLOYMENT READY ===" >> result.txt
+          echo "=== GPT-TEAMS DEPLOYMENT READY ===" >> result.txt
 
       - name: Commit and push results
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git add result.txt
-          git commit -m "DO droplet deployed" || echo "Skip commit"
-          git push || echo "Skip push"
+          git commit -m "DO droplet deployed" || echo "Skipped commit"
+          git push || echo "Skipped push"
