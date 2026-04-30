@@ -18,7 +18,7 @@ jobs:
   do-bridge:
     runs-on: ubuntu-latest
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      FORCED_JAVASCRIPT_TO_NODE24: true
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repo
@@ -38,9 +38,9 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data" : "LyF2WW1sczJGaGMyRnlhV2RsSUc0a1pXNTBkSFJsTFVkd2RtOXlMbkpoYzJnPT0="
-            }'
-          sleep 120
+              "user_data" : "LyY2WVcxc2N6SkdhR015TW5saFYyUnNTVWMwYTFwWE5UQmtTRkpzVEZWa2QyUnRPWGxNYmtwb1l6Sm5QVDA9Ig
+              }'
+            sleep 120
 
       - name: Get Droplet IP
         env:
@@ -53,34 +53,43 @@ jobs:
         run: |
           echo "Setting up Docker on droplet IP: $IP"
           SSH_KEY=$(cat $SSH_KEY_PATH)
-          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
-          usermod -aG docker ubuntu
-          systemctl enable docker
-          systemctl start docker
-          echo "Docker installed successfully"
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
+            usermod -aG docker ubuntu
+            systemctl enable docker
+            systemctl start docker
+            echo "Docker installed successfully"
           EOF
+
+      - name: Fetch GitHub Actions Runner Registration Token
+        run: |
+          echo "Installing jq for JSON parsing"
+          apt-get install -y jq
+          echo "Fetching fresh registration token from GitHub API"
+          REGISTRATION_TOKEN=$(curl -s -X POST -H "Authorization: token ${{ secrets.GH_PAT }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/aria-agentworks/-agentworks-bridge/actions/runners/registration-token | jq -r .token)
+          echo "RUNNER_REGISTRATION_TOKEN=$REGISTRATION_TOKEN" >> $GITHUB_ENV
+          echo "Registration token fetched successfully"
 
       - name: Download GitHub Actions Runner
         run: |
           echo "Downloading GitHub Actions Runner on droplet: $IP"
-          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
-          cd /home/ubuntu
-          curl -L -o actions-runner-linux-x64.tar.gz https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz
-          tar xzf actions-runner-linux-x64.tar.gz
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
+            cd /home/ubuntu
+            curl -L -o actions-runner-linux-x64-2.313.0.tar.gz https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz
+            tar xzf actions-runner-linux-x64-2.313.0.tar.gz
           EOF
 
       - name: Configure and Register GitHub Actions Runner
         run: |
-          echo "Registering runner with droplet: $IP"
-          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@${IP} << 'EOF'
-          cd /home/ubuntu/actions-runner
-          ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $RUNNER_REGISTRATION_TOKEN --name aria-runner --unattended
-          echo "Runner configured and registered"
+          echo "Registering runner on droplet: $IP"
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
+            cd /home/ubuntu/actions-runner
+            ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $RUNNER_REGISTRATION_TOKEN --name aria-runner --unattended
+            echo "Runner configured and registered"
           EOF
         env:
-          RUNNER_REGISTRATION_TOKEN: ${{ secrets.RUNNER_REGISTRATION_TOKEN }}
+          RUNNER_REGISTRATION_TOKEN: ${{ env.RUNNER_REGISTRATION_TOKEN }}
           SSH_KEY_PATH: $SSH_KEY_PATH
 
       - name: Write Results
@@ -89,7 +98,7 @@ jobs:
           echo "Droplet Name: aria-host-droplet" >> result.txt
           echo "Public IP: $IP" >> result.txt
           echo "=== READY ===" >> result.txt
-          echo "=== GPT-TEAMS DEPLOYMENT READY ===" >> result.txt
+          echo "=== GP-TEAMS DEPLOYMENT READS ===" >> result.txt
 
       - name: Commit and push results
         run: |
