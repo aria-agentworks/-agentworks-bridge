@@ -20,8 +20,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
-          echo "Host 139.59.18.31" >> ~/.ssh/config
-          echo "  HostName 139.59.18.31" >> ~/.ssh/config
+          echo "Host 159.65.178.129" >> ~/.ssh/config
+          echo "  Hostname 159.65.178.129" >> ~/.ssh/config
           echo "  User root" >> ~/.ssh/config
           echo "  IdentityFile ~/.ssh/private_key" >> ~/.ssh/config
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
@@ -30,7 +30,7 @@ jobs:
       - name: Repair Runner Service
         run: |
           echo "Installing and starting the GitHub Actions Runner service..."
-          ssh -i private_key root@139.59.18.31 << 'EOF'
+          ssh -i private_key root@159.65.178.129 << 'EOF'
             cd /home/ubuntu/actions-runner || mkdir -p /home/ubuntu/actions-runner
             if [ -f ./svc.sh ]; then
               echo "Starting runner service..."
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Swap File
         run: |
           echo "Creating 4GB swap file if it doesn't exist..."
-          ssh -i private_key root@139.59.18.31 << 'EOF'
+          ssh -i private_key root@159.65.178.129 << 'EOF'
             if [ ! -f /swapfile ]; then
               sudo fallocate -l 4G /swapfile
               sudo chmod 600 /swapfile
@@ -64,7 +64,7 @@ jobs:
       - name: Install Ollama and Pull Model
         run: |
           echo "Installing Ollama..."
-          ssh -i private_key root@139.59.18.31 << 'EOF'
+          ssh -i private_key root@159.65.178.129 << 'EOF'
             if ! command -v ollama &> /dev/null; then
               echo "Installing Ollama..."
               curl -fsSL https://ollama.com/install.sh | sh
@@ -72,14 +72,14 @@ jobs:
             else
               echo "Ollama is already installed"
             fi
-            
-            echo "Checking for dolphin-phi model..."
-            if ! ollama list | grep -q dolphin-phi; then
-              echo "Pulling dolphin-phi model..."
-              ollama pull dolphin-phi
+              
+            echo "Checking for dolphin-ph model..."
+            if ! ollama list | grep -q dolphin-ph; then
+              echo "Pulling dolphin-ph model..."
+              ollama pull dolphin-ph
               echo "Model downloaded successfully"
             else
-              echo "dolphin-phi model already exists"
+              echo "dolphin-ph model already exists"
             fi
           EOF
           echo "Ollama installation and model download completed"
@@ -87,7 +87,7 @@ jobs:
       - name: Verify Installation
         run: |
           echo "Verifying Ollama installation..."
-          ssh -i private_key root@139.59.18.31 << 'EOF'
+          ssh -i private_key root@159.65.178.129 << 'EOF'
             echo "Ollama installed models:"
             ollama list
             echo "Swap status:"
@@ -100,7 +100,7 @@ jobs:
       - name: Create Result File
         run: |
           echo "Creating repair result file..."
-          ssh -i private_key root@139.59.18.31 << 'EOF'
+          ssh -i private_key root@159.65.178.129 << 'EOF'
             echo "Repair and Install Complete" > /tmp/repair-result.txt
             echo "Timestamp: $(date)" >> /tmp/repair-result.txt
             echo "Runner Service: $(cd /home/ubuntu/actions-runner && sudo ./svc.sh status || echo 'N/A')" >> /tmp/repair-result.txt
