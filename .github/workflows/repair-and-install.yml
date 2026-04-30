@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "Setting up SSH key..."
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          echo "{{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
           echo "Host 159.65.178.129" >> ~/.ssh/config
           echo "  Hostname 159.65.178.129" >> ~/.ssh/config
@@ -72,7 +72,7 @@ jobs:
             else
               echo "Ollama is already installed"
             fi
-              
+            
             echo "Checking for dolphin-ph model..."
             if ! ollama list | grep -q dolphin-ph; then
               echo "Pulling dolphin-ph model..."
