@@ -1,0 +1,19 @@
+name: Security Training
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  security-report:
+    name: Generate Security Report
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate local security report
+        run: python3 scripts/fingerprint.py 127.0.0.1
