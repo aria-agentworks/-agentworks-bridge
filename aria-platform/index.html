@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aria Security - Infrastructure Protection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #000000 50%, #0a0a0a 100%);
+            color: #00ff41;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Navigation */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .logo span {
+            color: #ffffff;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+        
+        .nav-links a {
+            color: #00ff41;
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00ff41;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-btn {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 12px 28px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 255, 65, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: calc(100vh - 100px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(0, 255, 65, 0.02) 50px,
+                    rgba(0, 255, 65, 0.02) 51px
+                );
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+        }
+        
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.4),
+                        0 0 60px rgba(0, 255, 65, 0.2);
+        }
+        
+        .hero h1 .highlight {
+            color: #ffffff;
+            position: relative;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: #88aa88;
+            margin-bottom: 60px;
+            letter-spacing: 0.5px;
+            font-weight: 300;
+        }
+        
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 255, 65, 0.05);
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box:focus-within {
+            border-color: #00ff41;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.4),
+                        0 0 80px rgba(0, 255, 65, 0.2);
+        }
+        
+        .search-icon {
+            padding: 25px;
+            color: #00ff41;
+            font-size: 1.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 25px;
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-family: inherit;
+            outline: none;
+            letter-spacing: 0.5px;
+        }
+        
+        .search-input::placeholder {
+            color: #668866;
+            font-style: italic;
+        }
+        
+        .search-btn {
+            background: #00ff41;
+            color: #000000;
+            border: none;
+            padding: 25px 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .search-btn:hover {
+            background: #ffffff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Subscription Tier */
+        .subscription-tier {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 40px;
+            background: linear-gradient(90deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 213, 54, 0.1) 100%);
+            border: 1px solid rgba(0, 255, 65, 0.5);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .subscription-tier::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .tier-badge {
+            background: #00ff41;
+            color: #000000;
+            padding: 8px 20px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-radius: 2px;
+        }
+        
+        .price {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        
+        .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #88aa88;
+        }
+        
+        .tier-features {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .tier-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .tier-feature::before {
+            content: '✓';
+            color: #00ff41;
+            font-weight: 700;
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 80px 40px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            margin-top: 60px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #00ff41;
+            text-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #88aa88;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            margin-top: auto;
+        }
+        
+        .footer p {
+            color: #668866;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .search-btn {
+                padding: 20px 30px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .price {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <span style="color: #00ff41;">aria</span> Security
+        </div>
+        <div class="nav-links">
+            <a href="#">Features</a>
+            <a href="#">Solutions</a>
+            <a href="#">Pricing</a>
+            <a href="#">Resources</a>
+            <a href="#">Enterprise</a>
+        </div>
+        <button class="nav-btn">Get Started</button>
+    </nav>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                Protect Your Infrastructure from the 
+                <span class="highlight">Next Cl0p Strike</span>
+            </h1>
+            <p>
+                Enterprise-grade domain exposure monitoring and threat intelligence for modern security teams
+            </p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">⟳</span>
+                    <input type="text" 
+                           class="search-input" 
+                           placeholder="Enter domain to check exposure..." 
+                           id="domainInput">
+                    <button class="search-btn">Check Exposure</button>
+                </div>
+            </div>
+            
+            <div class="subscription-tier">
+                <span class="tier-badge">ENTERPRISE</span>
+                <div>
+                    <div class="price">$5,000<span style="font-size: 1rem;">/year</span></div>
+                    <div class="tier-features">
+                        <span class="tier-feature">Unlimited Exposure Reports</span>
+                        <span class="tier-feature">Remediation Intelligence</span>
+                        <span class="tier-feature">24/7 Threat Monitoring</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="stats">
+        <div class="stat">
+            <div class="stat-value">10M+</div>
+            <div class="stat-label">Domains Monitored</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">99.9%</div>
+            <div class="stat-label">Threat Detection Rate</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">500+</div>
+            <div class="stat-label">Enterprise Clients</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">Real-time Alerts</div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <p>© 2026 Aria Security. All rights reserved. | Enterprise Cybersecurity Solutions</p>
+    </footer>
+    
+    <script>
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            const domain = document.getElementById('domainInput').value;
+            if (domain) {
+                alert('Checking exposure for: ' + domain);
+            }
+        });
+        
+        document.getElementById('domainInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.search-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
