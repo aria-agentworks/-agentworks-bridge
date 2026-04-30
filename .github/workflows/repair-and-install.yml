@@ -1,0 +1,111 @@
+name: Repair and Install
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks.txt'
+
+jobs:
+  repair-and-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          echo "Setting up SSH key..."
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+          echo "Host 139.59.18.31" >> ~/.ssh/config
+          echo "  HostName 139.59.18.31" >> ~/.ssh/config
+          echo "  User root" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/private_key" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "SSH key configured successfully"
+
+      - name: Repair Runner Service
+        run: |
+          echo "Installing and starting the GitHub Actions Runner service..."
+          ssh -i private_key root@139.59.18.31 << 'EOF'
+            cd /home/ubuntu/actions-runner || mkdir -p /home/ubuntu/actions-runner
+            if [ -f ./svc.sh ]; then
+              echo "Starting runner service..."
+              sudo ./svc.sh install
+              sudo ./svc.sh start
+              echo "Runner service started successfully"
+            else
+              echo "Runner service not found, skipping"
+            fi
+          EOF
+          echo "Runner service repair completed"
+
+      - name: Setup Swap File
+        run: |
+          echo "Creating 4GB swap file if it doesn't exist..."
+          ssh -i private_key root@139.59.18.31 << 'EOF'
+            if [ ! -f /swapfile ]; then
+              sudo fallocate -l 4G /swapfile
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+              echo "Swap file created successfully"
+            else
+              echo "Swap file already exists"
+            fi
+            free -h
+          EOF
+          echo "Swap file setup completed"
+
+      - name: Install Ollama and Pull Model
+        run: |
+          echo "Installing Ollama..."
+          ssh -i private_key root@139.59.18.31 << 'EOF'
+            if ! command -v ollama &> /dev/null; then
+              echo "Installing Ollama..."
+              curl -fsSL https://ollama.com/install.sh | sh
+              echo "Ollama installed successfully"
+            else
+              echo "Ollama is already installed"
+            fi
+            
+            echo "Checking for dolphin-phi model..."
+            if ! ollama list | grep -q dolphin-phi; then
+              echo "Pulling dolphin-phi model..."
+              ollama pull dolphin-phi
+              echo "Model downloaded successfully"
+            else
+              echo "dolphin-phi model already exists"
+            fi
+          EOF
+          echo "Ollama installation and model download completed"
+
+      - name: Verify Installation
+        run: |
+          echo "Verifying Ollama installation..."
+          ssh -i private_key root@139.59.18.31 << 'EOF'
+            echo "Ollama installed models:"
+            ollama list
+            echo "Swap status:"
+            free -h
+            echo "Runner service status:"
+            cd /home/ubuntu/actions-runner && sudo ./svc.sh status || echo "Service check skipped"
+          EOF
+          echo "Verification completed"
+
+      - name: Create Result File
+        run: |
+          echo "Creating repair result file..."
+          ssh -i private_key root@139.59.18.31 << 'EOF'
+            echo "Repair and Install Complete" > /tmp/repair-result.txt
+            echo "Timestamp: $(date)" >> /tmp/repair-result.txt
+            echo "Runner Service: $(cd /home/ubuntu/actions-runner && sudo ./svc.sh status || echo 'N/A')" >> /tmp/repair-result.txt
+            echo "Swap: $(free -h 2>/dev/null || echo 'N/A')" >> /tmp/repair-result.txt
+            echo "Ollama Models:" >> /tmp/repair-result.txt
+            ollama list 2>/dev/null >> /tmp/repair-result.txt || echo "N/A" >> /tmp/repair-result.txt
+          EOF
+          echo "Result file created on droplet"
