@@ -148,6 +148,8 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
             cd /home/ubuntu/actions-runner
             ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $RUNNER_REGISTRATION_TOKEN --name aria-runner --unattended
+            sudo ./svc.sh install
+            sudo ./svc.sh start
             echo "Runner configured and registered"
           EOF
         env:
@@ -156,6 +158,7 @@ jobs:
 
       - name: Write Results
         run: |
+          set -e
           echo "=== DO DROPLET CREATED ===" >> result.txt
           echo "Droplet Name: aria-host-droplet" >> result.txt
           echo "Public IP: $IP" >> result.txt
