@@ -19,40 +19,26 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Get GitHub Actions runner token
-        id: get-token
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN || secrets.GH_PAT }}
-          script: |
-            const tokenData = await github.rest.actions.createInstallationAccessTokenForRepo({
-              owner: 'aria-agentworks',
-              repo: '-agentworks-bridge'
-            });
-            core.setOutput('token', tokenData.data.token);
-            core.setOutput('expires_at', tokenData.data.expires_at);
-            console.log('Token generated:', tokenData.data.token.substring(0, 20));
-
       - name: Create DigitalOcean Droplet
         id: create-droplet
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69ddad1dc8507d3e3c578dc4ef7
-          RUNNER_TOKEN: ${{ step.get-token.outputs.token }}
+          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dad1dc8507d3e3c578dc4ef7
         run: |
-          TOKEN="$RUNNER_TOKEN"
+          TOKEN="${{ env.GITHUB_TOKEN }}"
           curl -s -X POST https://api.digitalocean.com/v2/droplets \
             -H "Authorization: Bearer $DO_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
-              "name": "aria-host-droplet",
-              "region": "nyc3",
-              "size": "s-2vcpu-4gb",
-              "image": "ubuntu-22-04-x64",
-              "user_data': '''#!/bin/bash
+              "name" : "aria-host-droplet",
+              "region" : "nyc3",
+              "size" : "s-2vcpu-4gb",
+              "image" : "ubuntu-22-04-x64",
+              "user_data' : '''#!/bin/bash
 set -e
 apt-get update
 apt-get install -y docker.io git python3-pip curl wget
@@ -61,23 +47,23 @@ mkdir actions-runner
 cd actions-runner
 curl -O https://github.com/actions-runner/releases/download/v2.316.1/actions-runner-linux-x64-2.316.1.tar.gz
 tar xzf ./actions-runner-linux-x64-2.316.1.tar.gz
-./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $TOKEN --name aria-host-runner --unattended
+./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --name aria-host-runner --unattended
 ./svc.sh install
 systemctl enable actions-runner
 systemctl start actions-runner
-echo $?''') | python3 -c "import sys, json; d=json.load(sys.stdin); print('Droplet ID:', d['droplet']['id'])"
-          sleep 120
+echo '${{ ''''''''' }' | python3 -c "import sys, json; d=json.load(sys.stdin); print('Droplet ID:', d['droplets'][0]['id'])"
+          }
 
       - name: Get Droplet IP
         env:
-          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69ddad1dc8507d3e3c578dc4ef7
+          DO_TOKEN: dop_v1_8e94e5a9538c6422204735c0feede764ada51d69dad1dc8507d3e3c578dc4ef7
         run: |
           IP=$(curl -s -X GET "https://api.digitalocean.com/v2/droplets?page=1&per_page=100" -H "Authorization: Bearer $DO_TOKEN" | python3 -c "import sys, json; d=json.load(sys.stdin); print([x['public_ips'][0] for x in d['droplets'] if x['name']=='aria-host-droplet'][0])")
           echo "IP=$IP" >> $GITHUB_ENV
 
       - name: Write Results
         run: |
-          echo "=== DO DROPLET CREATED ===" > result.txt
+          echo "=== DO DROPLET CREATED ===" >> result.txt
           echo "Droplet Name: aria-host-droplet" >> result.txt
           echo "Public IP: $IP" >> result.txt
           echo "=== READY ===" >> result.txt
