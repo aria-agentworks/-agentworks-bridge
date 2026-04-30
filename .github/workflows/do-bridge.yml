@@ -39,7 +39,7 @@ jobs:
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
               "user_data" : "LyEvYmluL2Jhc2gKc2V0IC1lCmFwdC1nZXQgdXBkYXRlCmFwdC1nZXQgaW5zdGFsbCAteSBkb2NrZXIuaW8gZ2l0IHB5dG9uMy1waXBjdXJsIHdnZXQKY2QgL2hvbWUvdWJ1bnR1Cm1rZGlyIGFjdGlvbnMtcnVubmVyCmNkIGFjdGlvbnMtcnVubmVyCmN1cmwgLU8gaHR0cHM6Ly9naXRodWIuY29tL2FjdGlvbnMtcnVubmVyL3JlbGVhc2VzL2Rvd25sb2FkL3YyLjMxNi4xL2FjdGlvbnMtcnVubmVyLWxpbnV4LXg2NC0yLjMxNi4xLnRhci5negp0YXIgeGpmIC4vYWN0aW9ucy1ydW5uZXItbGludXgteDY0LTIuMzE2LjEudGFyLmd6Ci4vY29uZmlnLnNoIC0tdXJsIGh0dHBzOi8vZ2l0aHViLmNvbS9hcmlhLWFnZW50d29ya3MvLWFnZW50d29ya3MtYnJpZGdlIC0tbmFtZSBhcmlhLWhvc3QtcnVubmVyIC0tdW5hdHRlbmRlZAouL3N2Yy5zaCBpbnN0YWxsCnN5c3RlbWN0bCBlbmFibGUgYWN0aW9ucy1ydW5uZXIKc3lzdGVtY3RsIHN0YXJ0IGFjdGlvbnMtcnVubmVyCg=="
-'
+            }'
           sleep 120
 
       - name: Get Droplet IP
