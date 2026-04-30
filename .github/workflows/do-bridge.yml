@@ -38,21 +38,9 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data' : '''#!/bin/bash
-set -e
-apt-get update
-apt-get install -y docker.io git python3-pip curl wget
-cd /home/ubuntu
-mkdir actions-runner
-cd actions-runner
-curl -O https://github.com/actions-runner/releases/download/v2.316.1/actions-runner-linux-x64-2.316.1.tar.gz
-tar xzf ./actions-runner-linux-x64-2.316.1.tar.gz
-./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --name aria-host-runner --unattended
-./svc.sh install
-systemctl enable actions-runner
-systemctl start actions-runner
-echo '${{ ''''''''' }' | python3 -c "import sys, json; d=json.load(sys.stdin); print('Droplet ID:', d['droplets'][0]['id'])"
-          }
+              "user_data" : "LyEvYmluL2Jhc2gKc2V0IC1lCmFwdC1nZXQgdXBkYXRlCmFwdC1nZXQgaW5zdGFsbCAteSBkb2NrZXIuaW8gZ2l0IHB5dG9uMy1waXBjdXJsIHdnZXQKY2QgL2hvbWUvdWJ1bnR1Cm1rZGlyIGFjdGlvbnMtcnVubmVyCmNkIGFjdGlvbnMtcnVubmVyCmN1cmwgLU8gaHR0cHM6Ly9naXRodWIuY29tL2FjdGlvbnMtcnVubmVyL3JlbGVhc2VzL2Rvd25sb2FkL3YyLjMxNi4xL2FjdGlvbnMtcnVubmVyLWxpbnV4LXg2NC0yLjMxNi4xLnRhci5negp0YXIgeGpmIC4vYWN0aW9ucy1ydW5uZXItbGludXgteDY0LTIuMzE2LjEudGFyLmd6Ci4vY29uZmlnLnNoIC0tdXJsIGh0dHBzOi8vZ2l0aHViLmNvbS9hcmlhLWFnZW50d29ya3MvLWFnZW50d29ya3MtYnJpZGdlIC0tbmFtZSBhcmlhLWhvc3QtcnVubmVyIC0tdW5hdHRlbmRlZAouL3N2Yy5zaCBpbnN0YWxsCnN5c3RlbWN0bCBlbmFibGUgYWN0aW9ucy1ydW5uZXIKc3lzdGVtY3RsIHN0YXJ0IGFjdGlvbnMtcnVubmVyCg=="
+'
+          sleep 120
 
       - name: Get Droplet IP
         env:
