@@ -1,0 +1,40 @@
+name: Install Ollama
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tasks.txt'
+
+jobs:
+  install-ollama:
+    runs-on: self-hosted
+    steps:
+      - name: Install Ollama
+        run: |
+          echo "Installing Ollama..."
+          curl -fsSL https://ollama.com/install.sh | sh
+          echo "Ollama installation completed"
+
+      - name: Create and Enable 4GB Swap File
+        run: |
+          echo "Creating 4GB swap file..."
+          sudo fallocate -l 4G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+          echo "Swap file created and enabled successfully"
+          free -h
+
+      - name: Pull Dolphin-Phi Model
+        run: |
+          echo "Pulling dolphin-phi model (3B uncensored)..."
+          ollama pull dolphin-phi
+          echo "Model downloaded successfully"
+
+      - name: Verify Installation
+        run: |
+          echo "Installed Ollama models:"
+          ollama list
