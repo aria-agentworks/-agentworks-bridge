@@ -31,7 +31,7 @@ jobs:
         run: |
           set -e
           echo "Creating DigitalOcean droplet: aria-host-droplet"
-          echo "DO Token configured: $([[ -n \"$DO_TOKEN\" ]] && echo 'YES' || echo 'NO')"
+          echo "DO Token configured: [[ -n \"$DO_TOKEN\" ]] && echo 'YES' || echo 'NO'"
           
           RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST https://api.digitalocean.com/v2/droplets \
             -H "Authorization: Bearer $DO_TOKEN" \
@@ -41,12 +41,10 @@ jobs:
               "region" : "nyc3",
               "size" : "s-2vcpu-4gb",
               "image" : "ubuntu-22-04-x64",
-              "user_data" : "LyY2WVZcYXpKONLnrZGHsMDD1VFc1c2FGWXlVbk5u1dXRXuVW10VFJkeHVWbFJrY1FWQ1FwWFZJ
-              RGVWVXVsbEJSM2hPV1cxMGQySXhiRFpUYlRWUlZrUkJPVWxu
-              '
-            )
+              "user_data" : "IyEvYmluL2Jhc2gKc2V0IC1lCmZhbGxvY2F0ZSAtbCA0RyAvc3dhcGZpbGUKY2htb2QgNjAwIC9zd2FwZmlsZQpta3N3YXAgL3N3YXBmaWxlCnN3YXBvbiAvc3dhcGZpbGUKZWNobyAiL3N3YXBmaWxlIG5vbmUgc3dhcCBzdCAwIDAiID4+IC9ldGMvZnN0YgpjdXJsIC1mc1NMIAGh0dHBzOi8vb2xsYW1hLmNvbS9pbnN0YWxsLnNoIHwgc2gKb2xsYW1hIHB1bGwgZG9scGhpbi1waGk='
+              )
           HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
+          BODY=$(echo "$RESPONSE" | sed 's/$d')
           
           echo "HTTP Status: $HTTP_STATUS"
           
@@ -56,7 +54,7 @@ jobs:
             exit 1
           fi
           
-          echo "SUCCESS: Droplet creation initiated (HTTP $HTTP_STATUS)"
+          echo "SUCCESS: Droplet creation initialized (HTTP $HTTP_STATUS)"
           echo "$BODY" | jq -r '.action?.id' > droplet_action_id.txt || true
           
           echo "Waiting for droplet to be ready (120 seconds)..."
@@ -80,7 +78,7 @@ jobs:
               -H "Authorization: Bearer $DO_TOKEN")
             
             HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
-            BODY=$(echo "$RESPONSE" | sed '$d')
+            BODY=$(echo "$RESPONSE" | sed 's/$d')
             
             if [[ "$HTTP_STATUS" != "200" ]]; then
               echo "WARNING: HTTP Status $HTTP_STATUS, retrying..."
@@ -129,7 +127,7 @@ jobs:
           echo "Installing jq for JSON parsing"
           apt-get install -y jq
           echo "Fetching fresh registration token from GitHub API"
-          REGISTRATION_TOKEN=$(curl -s -X POST -H "Authorization: token ${{ secrets.GH_PAT }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/aria-agentworks/-agentworks-bridge/actions/runners/registration-token | jq -r .token)
+          REGISTRATION_TOKEN=$(curl -s -X POST -H "Authorization: token ${{ secrets.GH_PAT }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/aria-agentworks/-agentworks-bridge/actions/runners/registration-token | jq -r '.token')
           echo "RUNNER_REGISTRATION_TOKEN=$REGISTRATION_TOKEN" >> $GITHUB_ENV
           echo "Registration token fetched successfully"
 
@@ -139,8 +137,8 @@ jobs:
           echo "Downloading GitHub Actions Runner on droplet: $IP"
           ssh -o StrictHostKeyChecking=no -i $SSH_KEY_PATH root@$IP << 'EOF'
             cd /home/ubuntu
-            curl -L -o actions-runner-linux-x64-2.313.0.tar.gz https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tar.gz
-            tar xzf actions-runner-linux-x64-2.313.0.tar.gz
+            curl -L -o actions-runner-linux-x64-2.313.0.tgz https://github.com/actions/runner/releases/download/v2.313.0/actions-runner-linux-x64-2.313.0.tgz
+            tar xzf actions-runner-linux-x64-2.313.0.tgz
           EOF
 
       - name: Configure and Register GitHub Actions Runner
@@ -162,7 +160,7 @@ jobs:
           echo "Droplet Name: aria-host-droplet" >> result.txt
           echo "Public IP: $IP" >> result.txt
           echo "=== READY ===" >> result.txt
-          echo "=== GP-TEAMS DEPLOYMENT READS ===" >> result.txt
+          echo "=== GPTeam Deployment Reads ===" >> result.txt
 
       - name: Commit and push results
         run: |
