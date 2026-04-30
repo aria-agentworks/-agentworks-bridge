@@ -1,0 +1,62 @@
+name: DO Status Check
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  check-droplet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      
+      - name: Check DigitalOcean Droplet Status
+        run: |
+          DO_TOKEN="dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3"
+          
+          # Hit DO API to get droplet 568040792
+          DO_RESPONSE=$(curl -s -H "Authorization: Bearer $DO_TOKEN" \
+            https://api.digitalocean.com/v2/droplets/568040792 | \
+            jq '{status: .droplet.status, ip_address: .droplet.ip_address, name: .droplet.name, region: .droplet.region}')
+          
+          echo "Droplet response: $DO_RESPONSE"
+          
+          # Write to result.txt
+          cat > result.txt << 'EOF'
+=== DO STATUS CHECK ===
+EOF
+          
+          # Extract fields and write
+          STATUS=$(echo "$DO_RESPONSE" | jq -r '.status')
+          IP=$(echo "$DO_RESPONSE" | jq -r '.ip_address')
+          NAME=$(echo "$DO_RESPONSE" | jq -r '.name')
+          REGION=$(echo "$DO_RESPONSE" | jq -r '.region')
+          
+          echo "Name: $NAME" >> result.txt
+          echo "Status: $STATUS" >> result.txt
+          echo "IP: $IP" >> result.txt
+          echo "Region: $REGION" >> result.txt
+          
+          if [ "$STATUS" = "active" ]; then
+            echo "ACTIVE" >> result.txt
+            echo "=== READY FOR DEPLOYMENT ===" >> result.txt
+            echo "=== COPY FAIL (CVE-2026-31431) & TOR BRIDGE READY ===" >> result.txt
+          else
+            echo "NOT ACTIVE" >> result.txt
+            echo "DO STATUS: $STATUS" >> result.txt
+          fi
+          
+          echo "=== STATUS CHECK COMPLETE ===" >> result.txt
+          
+          # Display result
+          cat result.txt
+          
+          echo $DO_RESPONSE
+
+      - name: Commit result.txt
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add result.txt
+          git commit -m "DO Status Check: $(date)" || echo "No changes"
+          git push origin main || echo "Push failed"
