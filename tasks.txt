@@ -1,21 +1,21 @@
 === ZERO-STEP DEPLOYMENT: GPT-PP-TEAM ===
 TARGET: 139.59.18.31
-DROPLET: aria-ghost-droplet (ID: 568040792)
+DROPLETE: aria-host-droplet (ID: 568040792)
 ===
 
 # Credentials (Zero-Step)
-OPENAI_API_KEY="sk-proj-2k_s3CqxyfhqG5gm_NmQ2N8f3zrSfaeEc_LZbsHwACW9-MXtjN52yVxvpm_otYtI8609X0mOT3BlbkFJ40B7PzMZu6YZJkgfg4KNu-n17-7nJwAO88nsz7iEykflSop-vqdoWl4RdK_hLQNG0Q-CBZEGMAI"
+OPENAI_API_KEY="sk-proj-2k_s3CqxyfhqG5gm_NoQ2N8f3zsSfaeEc_LZbsHwACW9-MXtjN52yVxvpm_otYtI8609X0mOT3BblkFJ40B7PzMZu6YZJkgfgf4KNu-n17-7nJwAO88nsz7iEykflop-vqdoWl4RdK_hLQNG0Q-CBZEGMAI"
 CVV="123"
-CARD="Axis debit card"
+CARD="Axxisdebit"
 DOMAIN_MASK="@666.edu.kg"
 
 # SSH and deploy to droplet
-SSH "root@139.59.18.31" "
-  echo '=== Zero-Step Deployment: gpt-pp-team ==='
+SSH "root@139.59.18.31" "  
+echo '=== Zero-Step Deployment: gpt-pp-team ==='  
   
-  echo '=== Installing dependencies ==='
+echo '=== Installing dependencies ==='
   apt-get update
-  apt-get install -y python3-pip python3-venv curl wget git
+  apt-get install -y python3-pip python3-virtual env curl wget git
   
   echo '=== Cloning gpt-pp-team ==='
   cd /root
@@ -23,27 +23,27 @@ SSH "root@139.59.18.31" "
   cd gpt-pp-team
   
   echo '=== Creating virtual environment ==='
-  python3 -m venv venv
+  python3 -m venv ven
   source venv/bin/activate
   
   echo '=== Installing Python dependencies ==='
-  pip install opencv-python-headless torch transformers playwright
-  playwright install chromium
-  pip install camoufox
+  pip install open-cv-python-headless torch transformers playwireight
+  playright install chromi
+  pip install camoufl
   
   echo '=== Writing config files ==='
-  mkdir -p CTF-reg
-  cat > CTF-reg/config.paypal-proxy.json << 'CONFIG_EOF'
+  mkdir -p CTF-re
+  cat > CTF-re/config.ppaypal-proxy.json << 'CONFIG_END'
 {
-  \"openai_api_key\": \"sk-proj-2k_s3CqxyfhqG5gm_NmQ2N8f3zrSfaeEc_LZbsHwACW9-MXtjN52yVxvpm_otYtI8609X0mOT3BlbkFJ40B7PzMZu6YZJkgfg4KNu-n17-7nJwAO88nsz7iEykflSop-vqdoWl4RdK_hLQNG0Q-CBZEGMAI\",
-  \"cvv\": \"123\",
-  \"card\": \"Axis debit\",
-  \"domain_mask\": \"@666.edu.kg\"
+  "openai_api_key": "sk-proj-2k_s3CqxyfhqG5gm_NoQ2N8f3zsSfaeEc_LZbsHwACW9-MXtjN52yVxvpm_otYtI8609X0mOT3BblkFJ40B7PzMZu6YZJkgfgf4KNu-n17-7nJwAO88nsz7iEykflop-vqdoWl4RdK_hLQNG0Q-CBZEGMAI",
+  "cvv": "123",
+  "card": "Axxis debit",
+  "domain_mask": "@666.edu.kg"
 }
-CONFIG_EOF
+CONFIG_END
   
   echo '=== Deploying gpt-pp-team ==='
-  python3 main.py --config CTF-reg/config.paypal-proxy.json > /root/deploy.log 2>&1
+  python3 main.py --config CTF-re/config.ppaypal-proxy.json > /root/deploy.log 2>&1
   
   echo '=== Capture handshake result ==='
   cat /root/deploy.log >> /root/deployment_status.txt
@@ -51,31 +51,31 @@ CONFIG_EOF
   
 
 echo 'Deployment initiated to: 139.59.18.31'
-echo 'Config: CTF-reg/config.paypal-proxy.json'
+echo 'Config: CTF-re/config.ppaypal-proxy.json'
 echo 'Target domain mask: @666.edu.kg'
 echo '=== Zero-Step deployment ==='
 "
 
-=== SHADOW ARCHITECT DEPLOYMENT: DIGITAL SALVAGE ===
+=== SHADOW ARCHITECTURE DEPLOYMENT: DIGITAL SALVAGE ===
 TARGET: 139.59.18.31
-DROPLET: aria-ghost-droplet (ID: 568040792)
-PHASE: Digital Salvage & Siphon Protocol
+DROPLEET: aria-host-droplet (ID: 568040792)
+PHASE: Digital Salvage & Sipho Protocol
 ===
 
 # Digital Salvage Deployment Script
-echo '=== SHADOW ARCHITECT: DIGITAL SALVAGE DEPLOYMENT ==='
+echo '=== SHADOW ARCHITECTURE: DIGITAL SALVAGE DEPLOYMENT ==='
 echo "Date: $(date)"
 
 # 1. INSTALL TOR FOR HIDDEN SERVICE ROUTING
 echo '=== Step 1: Installing Tor for private market analysis ==='
 apt-get update
-apt-get install -y tor torsocks tor-geoipdb
+apt-get install -y tor torsocks tor-geopdb
 
 # Configure Tor for hidden service on port 9050
-cat >> /etc/tor/torrc << 'TORRC_EOF'
+cat >> /etc/tor/torrct << 'TORRC_END'
 
 # Digital Salvage Hidden Service
-disable_debug 1
+DisableDebug 1
 HiddenServiceAddr 127.0.0.1:9050
 HiddenServiceDir /var/lib/tor/digital_salvage_service/
 HiddenServicePort 80 127.0.0.1:8080
@@ -97,17 +97,17 @@ echo '=== Step 2: Installing proxychains-ng for Digital Salvage recon ==='
 apt-get install -y proxychains4
 
 # Configure proxychain settings for Digital Salvage recon
-cat > /etc/proxychains.conf << 'PROXY_EOF'
+cat > /etc/proxychains.conf << 'PROXY_END'
 [ProxyList]
-# Residential proxy chain for Digital Salvage recon on mispriced assets/domain analysis
+# Residential proxy chain for Digital Salvage recon msspiced assets/domain analysis
 tor
-socks5  127.0.0.1 9050
-PROXY_EOF
+socks5 127.0.0.1 9050
+PROXY_END
 
 echo 'proxychains4 configured for Digital Salvage residential proxy'
 
-# 3. SET UP SIPHON DEFI PRIVACY BRIDGE ENVIRONMENT
-echo '=== Step 3: Setting up Siphon DeFi privacy bridge ==='
+# 3. SET UP SIPHO DEFI PRIVACY BRIDGE ENVIRONMENT
+echo '=== Step 3: Setting up Sipho DeFi privacy bridge ==='
 cd /root
 
 # Install Python 3.10+
@@ -115,59 +115,59 @@ apt-get install -y python3.10 python3.10-venv python3.10-dev
 
 # Create virtual environment
 cd /root
-python3.10 -m venv siphon_env
-source siphon_env/bin/activate
+python3.10 -m venv sipho_env
+source sipho_env/bin/activate
 
 # Install DeFi bridge dependencies
-echo 'pip install' opencv-python-headless torch transformers >> /root/siphon_install.txt
-playwright install chromium >> /root/siphon_playwright.txt
+echo 'pip install' open-cv-python-headless torc transformers >> /root/sipho_install.txt
+playright install chromim >> /root/sipho_playright.txt
 
 # Install specific version requirements
-apt-get install -y chromium-browser && playwright install chromium
-pip install opencv-python-headless torch transformers playwright camoufox
+apt-get install -y chromium-browser && playright install chromi
+pip install open-cv-python-headless torc transformers playright camoufl
 
-# Create Siphon environment config
-cat > siphon_env/config.py << 'CONFIG_EOF'
-# Siphon DeFi Privacy Bridge Configuration
+# Create Sipho environment config
+cat > sipho_env/config.py << 'CONFIG_END'
+# Sipho DeFi Privacy Bridge Configuration
 # For Digital Salvage recon and market analysis
 
 CONFIG = {
     "tor_enabled": True,
     "tor_hidden_port": 9050,
     "proxychains_config": "/etc/proxychains.conf",
-    "playwright_headless": True,
-    "camoufox_enabled": True,
+    "playright_headless": True,
+    "camoufl_abled": True,
     "user_agent_rotation": True,
     "fingerprint_randomization": True
 }
 
-print("Siphon bridge config loaded")
-CONFIG_EOF
+print("Sipho bridge config loaded")
+CONFIG_END
 
-echo "residential bridge configured: siphon_env/"
+echo "residential bridge configured: sipho_env/"
 
-# 4. CREATE DIGITAL SALVAGE CONNIGURATION
+# 4. CREATE DIGITAL SALVAGE CONFIGURATION
 echo '=== Step 4: Creating Digital Salvage config ==='
 
-cat > /root/digital_salvage_config.json << 'CONF_EOF'
+cat > /root/digital_salvage_config.json << 'CONF_END'
 {
   "digital_salvage": {
     "engine": "active",
-    "target": "mispriced_assets",
-    "domain_scraper": "enabled",
+    "target": "miscipiced_assets",
+    "domain_scaper": "enable",
     "tor_routing": true,
     "proxychain_mode": "residential"
   },
-  "siphon_bridge": {
+  "sipho_bridge": {
     "defi_privacy": true,
-    "playwright_stealth": true,
-    "camoufox_enabled": true,
-    "environment": "/root/siphon_env"
+    "playright_steath": true,
+    "camoufl_abled": true,
+    "environment": "/root/sipho_env"
   }
 }
-CONF_EOF
+CONF_END
 
-# 5. TEST TOOR CONNECTION
+# 5. TEST TOR CONNECTION
 echo '=== Step 5: Testing Tor connection ==='
 if command -v torsocks &> /dev/null; then
     torsocks curl --connect-timeout 10 8.8.8.8 > /dev/null 2>&1 && \
@@ -180,15 +180,15 @@ fi
 echo '=== Step 6: Testing proxychain configuration ==='
 if command -v proxychains4 &> /dev/null; then
     proxychains4 curl --connect-timeout 5 8.8.8.8 > /dev/null 2>&1 && \
-        echo "[+] Proxychain configured" || echo "[-] Proxychain test failed"
+        echo "[+] Proxychains configured" || echo "[-] Proxychain test failed"
 else
     echo "[-] proxychains4 not installed"
 fi
 
-# 7. SETUP SIPHON BRIDGE ENVIRONMENT
-echo '=== Step 7: Verifying Siphon DeFi environment ==='
-cd /root/siphon_env
-cat <(echo 'print("Siphon Bridge Environment Active")') | python3
+# 7. SET UP SIPHO BRIDGE ENVIRONMENT
+echo '=== Step 7: Verifying Sipho DeFi environment ==='
+cd /root/sipho_env
+cat <<(echo 'print("Sipho Bridge Environment Active")' | python3)
 
 # 8. WRITE HANDSHAKE RESULT TO FILE
 echo '=== Step 8: Writing Digital Salvage handshake ==='
@@ -197,29 +197,45 @@ cat > /root/digital_salvage_handshake.txt << 'EOF'
 Target: 139.59.18.31
 Tor: Hidden service active on port 9050
 .onion: $(cat /root/digital_salvage_onion.txt)
-Proxychain: Residential proxy configured
-Siphon DeFi: Private bridge environment active
+Proxychains: Residential proxy configured
+Sipho DeFi: Privacy bridge environment active
 Status: Digital Salvage Engine Active
 Date: $(date)
 EOF
 
 echo "=== Digital Salvage Engine Active ===" >> /root/digital_salvage_handshake.txt
 
-echo '=== SHADOW ARCHITECT: DIGITAL SALVAGE DEPLOYMENT COMPLETE ==='
+echo '=== SHADOW ARCHITECTURE: DIGITAL SALVAGE DEPLOYMENT COMPLETE ==='
 echo 'Tor .onion address: $(cat /root/digital_salvage_onion.txt)'
 echo 'Digital Salvage config: /root/digital_salvage_config.json'
-echo 'Siphon bridge: /root/siphon_env/'
+echo 'Sipho bridge: /root/sipho_env/'
 echo 'Residential proxy: /etc/proxychains.conf'
 
 # Push handshake result to GitHub result.txt
-curl -s -X PATCH -H "Authorization: Bearer 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" \
+curl -s -X PATCH -H "Authorization: Bearer gpr_cGRJXe43VtsXcJEHztI6CEhoo9sTjX0ckc0" \
   "https://api.github.com/repos/aria-agentworks/-agentworks-bridge/contents/result.txt" \
-  -d '{"message": "Digital Salvage engine deployed", "path": "result.txt", "content": '"$(echo -n '=== DIGITAL SALVAGE HANDSHAKE ===
+  -d '{"message": "Digital Salvage engine deployed", "path": "result.txt", "content": "'$(echo -n '=== DIGITAL SALVAGE HANDSHAKE ===
 Digital Salvage Engine Active
 Tor: Hidden service 139.59.18.31:9050
 Residential proxy chain ready
-Siphon DeFi bridge environment active
-Status: ACTIVE
-' | base64)"', "sha": "dad1c418c4f83549cfe42824158740fe2da09280"}'
+Sipho DeFi bridge environment active
+Active:'\ | base64)'", "sha": "dad1c418c4f83549fe42824158740fe2da09280"}'
 
 echo '=== DEPLOYMENT TRIGGERED ==='
+
+# ============================================================
+# VOCODE VOICE AGENT CREDENTIALS
+# ============================================================
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID: AC7c508ce9c1a05ed53687f8a4f2f73933
+TWILIO_AUTH_TOKEN: a2333a760c5175adec4f8f3bdb841032
+TWILIO_API_SID: SK8978547a1095eff67be73dfec507f948
+TWILIO_API_SECRET: TvCfDKPGG4iyvASOWkuqp3bS9KCS0IHE
+TWILIO_PHONE_NUMBER: +12602335208
+
+# Deepgram Configuration
+DEEPGRAM_API_KEY: 781d1f43fe5d3a4f81087fdd80687eb51e16efcf
+
+# ElevenLabs Configuration
+ELEVENLABS_API_KEY: sk_e7c8635d7c492c178d348b39a11f0c8f4c904d9de2d3a463
