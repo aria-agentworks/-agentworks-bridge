@@ -1,0 +1,55 @@
+name: Emerson Electric CVE-2026-41940 Scan
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  scan-emerson:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt 2>/dev/null || true
+
+      - name: Scan emerson.com for CVE-2026-41940
+        run: |
+          echo "Starting CVE-2026-41940 scan for emerson.com..."
+          python3 scripts/cve_2026_41940_scan.py emerson.com
+          echo "Scan complete. Results printed to stdout"
+
+      - name: Save scan results
+        run: |
+          python3 scripts/cve_2026_41940_scan.py emerson.com > security_scan_emerson.com.json
+          echo "Results saved to security_scan_emerson.com.json"
+          cat security_scan_emerson.com.json
+
+      - name: Check scan results
+        id: results
+        run: |
+          if [ -f "security_scan_emerson.com.json" ]; then
+            echo "STATUS=success" >> $GITHUB_OUTPUT
+            echo "SCANNED=true" >> $GITHUB_OUTPUT
+          else
+            echo "STATUS=failed" >> $GITHUB_OUTPUT
+            echo "scanned=false" >> $GITHUB_OUTPUT
+            echo "Error: scan file not generated"
+          fi
+
+      - name: Commit and push scan results
+        if: steps.outputs.SCANNED == 'true'
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add security_scan_emerson.com.json
+          git commit -m "Emerson CVE-2026-41940 scan results" || echo "No changes to commit"
+          git push origin main || echo "Push failed, results in repository"
+
+      - name: Display scan results
+        run: |
+          echo "=== Emerson Scanning Results ==="
+          cat security_scan_emerson.com.json
