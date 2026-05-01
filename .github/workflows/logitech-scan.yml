@@ -1,11 +1,9 @@
-name: Logitech CVE-2026-41940 Scan
-# Triggered by push - 2026-05-01T18:14:00+05:30 CVE-2026-41940 Scan
+name: Logitech CVEL-2026-41940 Scan
+# Triggered by push - 2026-05-01T18:14:00+05:30 CVL-2026-41940 Scan
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
-    paths:
-      - '.github/workflows/logitech-scan.yml'
 
 jobs:
   scan-logitech:
@@ -19,9 +17,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt 2>/dev/null || true
 
-      - name: Scan whm.logitech.com for CVE-2026-41940
+      - name: Scan whm.logitech.com for CVL-2026-41940
         run: |
-          echo "Starting CVE-2026-41940 scan for whm.logitech.com..."
+          echo "Starting CVL-2026-41940 scan for whm.logitech.com..."
           python3 scripts/cve_2026_41940_scan.py whm.logitech.com
           echo "Scan complete. Result should be in security_scan_whm.logitech.com.json"
 
