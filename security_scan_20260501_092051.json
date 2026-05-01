@@ -1,0 +1,41 @@
+{
+  "scan_timestamp": "2026-05-01T09:20:51.089455",
+  "target": "127.0.0.1",
+  "server_header_analysis": [
+    {
+      "port": 22,
+      "server_type": "unknown",
+      "content_type": "unknown",
+      "x_powered_by": "not specified",
+      "x_frame_options": "not set",
+      "x_content_type_options": "not set",
+      "strict_transport_security": "not set",
+      "content_security_policy": "not set",
+      "security_headers_set": {
+        "x_frame_options": false,
+        "x_content_type_options": false,
+        "strict_transport_security": false,
+        "content_security_policy": false,
+        "x_xss_protection": false,
+        "total_set": 0,
+        "percentage": 0.0
+      }
+    }
+  ],
+  "port_scan": [],
+  "exposed_endpoints": [],
+  "summary": {
+    "total_ports_scanned": 1024,
+    "open_ports_found": 1,
+    "open_port_list": [
+      22
+    ],
+    "ports_with_security_headers": 0,
+    "exposed_endpoints_found": 0,
+    "security_score": 95,
+    "recommendations": [
+      "Consider restricting access to sensitive ports: [22]",
+      "Implement comprehensive security headers (HSTS, CSP, X-Frame-Options, etc.)"
+    ]
+  }
+}
