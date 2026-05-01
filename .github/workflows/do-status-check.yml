@@ -5,53 +5,50 @@ on:
 
 jobs:
   check-droplet:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-      
-      - name: Check DigitalOcean Droplet Status
+    
+      - name: Check Self-Hosted Runner Health Status
         run: |
-          DO_TOKEN="dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3"
-          
-          # Hit DO API to get droplet 568040792
-          DO_RESPONSE=$(curl -s -H "Authorization: Bearer $DO_TOKEN" \
-            https://api.digitalocean.com/v2/droplets/568040792 | \
-            jq '{status: .droplet.status, ip_address: .droplet.ip_address, name: .droplet.name, region: .droplet.region}')
-          
-          echo "Droplet response: $DO_RESPONSE"
+          # Ping the self-hosted runner at 139.59.18.31
+          PING_RESPONSE=$(curl -s -m 10 -o /dev/null -w "%{http_code}" http://139.59.18.31/health 2>/dev/null || echo "000")
           
           # Write to result.txt
           cat > result.txt << 'EOF'
-=== DO STATUS CHECK ===
+== DO STATUS CHECK ==
 EOF
           
-          # Extract fields and write
-          STATUS=$(echo "$DO_RESPONSE" | jq -r '.status')
-          IP=$(echo "$DO_RESPONSE" | jq -r '.ip_address')
-          NAME=$(echo "$DO_RESPONSE" | jq -r '.name')
-          REGION=$(echo "$DO_RESPONSE" | jq -r '.region')
-          
-          echo "Name: $NAME" >> result.txt
-          echo "Status: $STATUS" >> result.txt
-          echo "IP: $IP" >> result.txt
-          echo "Region: $REGION" >> result.txt
-          
-          if [ "$STATUS" = "active" ]; then
+          # Check if runner is healthy
+          if [ "$PING_RESPONSE" = "200" ]; then
+            echo "Status: HEALTHY" >> result.txt
+            echo "Name: self-hosted-runner-139.59.18.31" >> result.txt
+            echo "IP: 139.59.18.31" >> result.txt
+            echo "Region: DigitalOcean" >> result.txt
             echo "ACTIVE" >> result.txt
             echo "=== READY FOR DEPLOYMENT ===" >> result.txt
             echo "=== COPY FAIL (CVE-2026-31431) & TOR BRIDGE READY ===" >> result.txt
+          elif [ "$PING_RESPONSE" = "000" ]; then
+            echo "Status: UNREACHABLE" >> result.txt
+            echo "Name: self-hosted-runner-139.59.18.31" >> result.txt
+            echo "IP: 139.59.18.31" >> result.txt
+            echo "Region: DigitalOcean" >> result.txt
+            echo "NOT HEALTHY" >> result.txt
+            echo "Runner unreachable - status check failed" >> result.txt
           else
-            echo "NOT ACTIVE" >> result.txt
-            echo "DO STATUS: $STATUS" >> result.txt
+            echo "Status: ERROR (HTTP $PING_RESPONSE)" >> result.txt
+            echo "Name: self-hosted-runner-139.59.18.31" >> result.txt
+            echo "IP: 139.59.18.31" >> result.txt
+            echo "Region: DigitalOcean" >> result.txt
+            echo "ERROR" >> result.txt
+            echo "Runner returned HTTP status: $PING_RESPONSE" >> result.txt
           fi
           
           echo "=== STATUS CHECK COMPLETE ===" >> result.txt
           
           # Display result
           cat result.txt
-          
-          echo $DO_RESPONSE
 
       - name: Commit result.txt
         run: |
