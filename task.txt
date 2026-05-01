@@ -24,7 +24,7 @@ def scan_cve_2026_41940(domain):
         result['http_status_code'] = r.status_code
         result['headers_received'] = dict(r.headers)
         
-        # Check X-CPP-PHP-SERVER or similar for cPanel info
+        # Check X-CPanel-PHP-SERVER or similar for cPanel info
         if 'x-cpanel-php-version' in r.headers or 'x-cpe-ver' in r.headers.lower():
             result['summary']['security_status'] = 'VULNERABLE'
             result['vulnerability_results']['cve_2026_41940_exploitable'] = True
