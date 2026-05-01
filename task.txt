@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import requests
+import json
+
+# CVE-2026-41940 cPanel Scan Targets
+target_domains = ['whm.logitech.com', 'whm.emerson.com']
+
+# Execute scan for each domain
+for domain in target_domains:
+    # Import and run the CVE scanner
+    from cve_2026_41940_scan import scan_domain
+    result = scan_domain(domain)
+    # Save result with domain-specific filename
+    with open(f'security_scan_{domain}.json', 'w') as f:
+        json.dump(result, f, indent=2)
+    print(f'Target {domain}: Scan complete')

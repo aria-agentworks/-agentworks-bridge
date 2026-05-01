@@ -1,3 +1,0 @@
-CVE-2026-41940 cPanel Vulnerability Scan Targets:
-- whm.logitech.com
-- whm.emerson.com
