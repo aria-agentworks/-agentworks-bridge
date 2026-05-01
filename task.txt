@@ -1,55 +1,27 @@
 #!/usr/bin/env python3
-import requests, json
+import sys
+import json
 from datetime import datetime
 
-targets = ['whm.logitech.com', 'whm.emerson.com']
+# Add scripts directory to path
+sys.path.insert(0, '.')
 
-def scan_cve_2026_41940(domain):
-    result = {
-        'scan_timestamp': datetime.utcnow().isoformat() + 'Z',
-        'target': domain,
-        'whm_port': 2087,
-        'http_status_code': None,
-        'server_header': None,
-        'cpanel_version': None,
-        'vulnerability_results': {
-            'cve_2026_41940_exploitable': False,
-            'cve_2026_41940_vulnerable_version': False,
-            'detected_methods': [],
-            'crlf_injection_possible': False
-        },
-        'headers_received': {},
-        'summary': {
-            'security_status': 'SECURE',
-            'recommendations': []
-        }
-    }
-    
-    try:
-        r = requests.head(f'https://{domain}:2087', timeout=10, verify=False)
-        result['http_status_code'] = r.status_code
-        result['headers_received'] = dict(r.headers)
-        result['server_header'] = r.headers.get('Server', 'Unknown')
-        result['cpanel_version'] = r.headers.get('X-CPanel-Version', 'Unknown')
-        
-        if 'cpanel' in result['server_header'].lower() or 'whm' in result['server_header'].lower():
-            result['vulnerability_results']['detected_methods'].append('cPanel/WHM detected')
-            result['vulnerability_results']['cve_2026_41940_vulnerable_version'] = True
-            result['summary']['security_status'] = 'VULNERABLE'
-            result['summary']['recommendations'].append(f'CVE-2026-41940 confirmed: cPanel/WHM with version {result["cpanel_version"]}')
-        
-        if r.status_code in [200, 301, 302] and 'cpanel' in result['server_header'].lower():
-            result['vulnerability_results']['detected_methods'].append('WHM accessible on port 2087')
-            result['vulnerability_results']['crlf_injection_possible'] = True
-            result['vulnerability_results']['cve_2026_41940_exploitable'] = True
-        
-    except Exception as e:
-        result['summary']['security_status'] = 'UNKNOWN'
-        result['summary']['recommendations'].append(f'Unable to scan: {str(e)}')
-    
-    return result
+try:
+    from scripts.cve_2026_41940_scan import scan_cve_2026_41940
+except ImportError:
+    # Fallback: try without scripts/ prefix
+    from cve_2026_41940_scan import scan_cve_2026_41940
+
+targets = [
+    'whm.logitech.com',
+    'whm.emerson.com'
+]
+
+print('Starting CVE-2026-41940 scan...')
 
 for domain in targets:
+    result = scan_cve_2026_41940(domain)
+    
     if 'logitech' in domain:
         filename = 'security_scan_logitech.json'
     elif 'emerson' in domain:
@@ -57,16 +29,14 @@ for domain in targets:
     else:
         filename = f'security_scan_{domain}.json'
     
-    scan_result = scan_cve_2026_41940(domain)
-    
     with open(filename, 'w') as f:
-        json.dump(scan_result, f, indent=2)
+        json.dump(result, f, indent=2)
     
-    print(f'Scan complete: {filename}')
-    print(f'Target: {domain}')
-    print(f'Status: {scan_result["summary"]["security_status"]}')
+    print(f'✓ Scan complete: {filename}')
+    print(f'  Target: {domain}')
+    print(f'  Status: {result["summary"]["security_status"]}')
     
-    if scan_result['summary']['security_status'] == 'VULNERABLE':
-        print(f'VERIFIED VULNERABLE: {domain}')
+    if result['summary']['security_status'] == 'VULNERABLE':
+        print(f'  ⚠️ CVE-2026-41940 CONFIRMED: {domain}')
 
-print('All scans complete.')
+print('\nAll scans complete.')
