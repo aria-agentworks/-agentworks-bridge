@@ -1,8 +1,303 @@
-<?xml version="1.0" encoding="UTF-8"?><roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmie" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">  <Settings>    <Name value="AriaVerse"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+  <Settings>
+    <Name value="AriaVerse"/>
     <AssetActionOption name="EnabledAssetUpload" value="True"/>
     <ContentFilterSettings FiltersEnabled="false"/>
-    <DatamodelInfo name="AriaVerse"/>
+    <DataModelInfo name="AriaVerse"/>
   </Settings>
-<Game>
-  <Instances></Instances></Game>
+  <Game>
+    <Instances>
+      <Item name="ReplicatedStorage" Class="ReplicatedStorage">
+        <Item name="AriaVerseData" Class="Folder">
+          <Item name="SatoshiVaultRemote" Class="RemoteEvent"/>
+          <Item name="PhobosEventRemote" Class="RemoteEvent"/>
+          <Item name="AnalyticsRemote" Class="RemoteEvent"/>
+        </Item>
+      </Item>
+      <Item name="ServerScriptService" Class="ServerScriptService">
+        <Item name="AriaVerse" Class="Folder">
+          <Item name="init.lua" Class="ModuleScript">
+            <Item name="Name" value="init.lua"/>
+            <Item name="Source">
+<![CDATA[
+print("AriaVerse Initializing...")
+local SatoshiVault = require(script:FindFirstChild("satoshi_vault_server.lua"))
+local PhobosEvent = require(script:FindFirstChild("phobos_event_server.lua"))
+local ViralHub = require(script:FindFirstChild("viral_hub_agent.lua"))
+local vault = SatoshiVault:create(script.Parent.Parent.Parent, "SatoshiVaultRemote")
+local event = PhobosEvent:initialize(script.Parent.Parent.Parent)
+local hub = ViralHub:initialize(script.Parent.Parent.Parent)
+print("[AriaVerse] All systems operational!")
+]]>
+            </Item>
+          </Item>
+          <Item name="satoshi_vault_server.lua" Class="ModuleScript">
+            <Item name="Name" value="satoshi_vault_server.lua"/>
+            <Item name="Source">
+<![CDATA[
+local SatoshiVault = {}
+SatoshiVault.__index = SatoshiVault
+SatoshiVault.MIN_POOL = 500000
+SatoshiVault.MAX_POOL = 2000000
+SatoshiVault.BASE_COST = 10000
+SatoshiVault.DAILY_SPIN_LIMIT = 10
+
+function SatoshiVault:create(instance, remoteEventName)
+    local self = setmetatable({}, SatoshiVault)
+    self.pool = SatoshiVault.MIN_POOL
+    local vaultRemote = instance:FindFirstChild(remoteEventName)
+    if not vaultRemote then
+        vaultRemote = Instance.new("RemoteEvent")
+        vaultRemote.Name = remoteEventName
+        vaultRemote.Parent = instance
+    end
+    vaultRemote.OnServerEvent:Connect(function(player, action)
+        self:HandleVaultEvent(player, tostring(action))
+    end)
+    return self
+end
+
+function SatoshiVault:HandleVaultEvent(player, action)
+    if not player or not player.UserId then return end
+    local spinCount = self:GetDailySpinCount(player.UserId)
+    if spinCount >= SatoshiVault.DAILY_SPIN_LIMIT then
+        warn("Daily spin limit reached")
+        return
+    end
+    if action == "spin" then
+        self:ProcessSpin(player)
+    elseif action == "getPool" then
+        self:ReturnPoolData(player)
+    end
+end
+
+function SatoshiVault:ProcessSpin(player)
+    local totalCost = SatoshiVault.BASE_COST
+    local availableBalance = (game:GetService("DataStoreService"):GetDataStore("PlayerVault") or {})[player.UserId] or 0
+    if availableBalance < totalCost then
+        return
+    end
+    local key = self:GenerateRandomKey()
+    local match = self:CountMatches(#key, "ABCDEF")
+    local prize = self:CalculatePrize(match)
+    self.pool = math.min(self.pool + 25, SatoshiVault.MAX_POOL)
+    player:SaveBalance(player.UserId, player:GetBalance(player.UserId) - totalCost + prize)
+    vaultRemote:FirePlayer(player, "WIN", {prize = prize, pool = self.pool})
+    self.winCount = self.winCount + 1
+end
+
+function SatoshiVault:GenerateRandomKey()
+    local key = ""
+    local hexChars = "0123456789ABCDEF"
+    for i = 1, 6 do
+        key = key .. string.sub(hexChars, math.random(1, 16), math.random(1, 16))
+    end
+    return key
+end
+
+function SatoshiVault:CountMatches(keyLen, selection)
+    local matchCount = 0
+    for i = 1, keyLen do
+        if selection:sub(i, i) == key:sub(i, i) then
+            matchCount = matchCount + 1
+        end
+    end
+    return matchCount
+end
+
+function SatoshiVault:CalculatePrize(match)
+    if match >= 6 then return self.pool
+    elseif match >= 4 then return math.floor(self.pool * 0.20)
+    elseif match >= 2 then return math.floor(self.pool * 0.02)
+    else return 0
+    end
+end
+
+return SatoshiVault
+]]>
+            </Item>
+          </Item>
+          <Item name="phobos_event_server.lua" Class="ModuleScript">
+            <Item name="Name" value="phobos_event_server.lua"/>
+            <Item name="Source">
+<![CDATA[
+local PhobosEvent = {}
+PhobosEvent.__index = PhobosEvent
+PhobosEvent.EVENT_TRIGGER_TIME = 150
+PhobosEvent.RING_DEBRIS_COUNT = 50
+PhobosEvent.CRATER_COUNT = 5
+
+function PhobosEvent:initialize(scriptService)
+    self.scriptService = scriptService
+    self.eventRemote = scriptService:FindFirstChild("PhobosEventRemote")
+    if not self.eventRemote then
+        self.eventRemote = Instance.new("RemoteEvent")
+        self.eventRemote.Name = "PhobosEventRemote"
+        self.eventRemote.Parent = scriptService
+    end
+    self.isActive = false
+    self.eventRemote.OnServerEvent:Connect(function(player, event, data)
+        self:HandleEventRequest(player, event, data)
+    end)
+    return self
+end
+
+function PhobosEvent:HandleEventRequest(player, event, data)
+    if event == "checkStatus" then
+        self:ReturnEventStatus(player)
+    elseif event == "startEvent" then
+        self:StartEvent()
+    end
+end
+
+function PhobosEvent:StartEvent()
+    self.isActive = true
+    self.phase = 1
+    self:Phase1_SkyboxShift()
+    task.delay(180, function() self:Phase2_RingFormation() end)
+    task.delay(600, function() self:Phase3_Impact() end)
+    task.delay(900, function() self:EndEvent() end)
+end
+
+function PhobosEvent:Phase1_SkyboxShift()
+    local lighting = game:GetService("Lighting")
+    lighting.Brightness = 1.0
+    lighting.TintColor = Color3.fromRGB(255, 60, 60)
+    self.eventRemote:FireAllClients("PHASE_START", {phase = 1})
+end
+
+function PhobosEvent:Phase2_RingFormation()
+    self.phase = 2
+    self.eventRemote:FireAllClients("PHASE_START", {phase = 2})
+    for i = 1, PhobosEvent.RING_DEBRIS_COUNT do
+        self:SpawnDebris(i)
+    end
+end
+
+function PhobosEvent:SpawnDebris(id)
+    local debris = Instance.new("Part")
+    debris.Name = "PhobosDebris_" .. id
+    debris.Anchored = false
+    debris.CanCollide = true
+    debris.Material = Enum.Material.Granite
+    debris.Size = Vector3.new(math.random(5, 50), math.random(5, 50), math.random(5, 50))
+    debris.Position = Vector3.new(math.random(-500, 500), math.random(2000, 3000), math.random(-500, 500))
+    debris.Parent = workspace
+end
+
+function PhobosEvent:Phase3_Impact()
+    self.phase = 3
+    self.eventRemote:FireAllClients("PHASE_START", {phase = 3})
+    for i = 1, PhobosEvent.CRATER_COUNT do
+        local location = Vector3.new(math.random(-500, 500), 0, math.random(-500, 500))
+        self:SpawnLootAtCrater(location)
+    end
+end
+
+function PhobosEvent:SpawnLootAtCrater(location)
+    local lootTypes = {"PhobosCore", "VoidMetal", "CosmicDust"}
+    local lootType = lootTypes[math.random(1, #lootTypes)]
+    self.eventRemote:FireAllClients("LOOT_SPAWN", {item = lootType, location = location})
+end
+
+function PhobosEvent:EndEvent()
+    self.isActive = false
+    self.phase = 0
+    print("[PhobosEvent] Event ended")
+end
+
+return PhobosEvent
+]]>
+            </Item>
+          </Item>
+          <Item name="viral_hub_agent.lua" Class="ModuleScript">
+            <Item name="Name" value="viral_hub_agent.lua"/>
+            <Item name="Source">
+<![CDATA[
+local ViralHub = {}
+ViralHub.__index = ViralHub
+ViralHub.AI_SERVER = "159.65.178.129"
+ViralHub.AI_PORT = 11434
+
+function ViralHub:initialize(scriptService)
+    self.contentQueue = {}
+    self.players = {}
+    local vaultRemote = scriptService:FindFirstChild("SatoshiVaultRemote")
+    local eventRemote = scriptService:FindFirstChild("PhobosEventRemote")
+    if vaultRemote then
+        vaultRemote.OnServerEvent:Connect(function(player, action, data)
+            if action == "win" then
+                self:ScanForViralMoments(player, data)
+            end
+        end)
+    end
+    print("[ViralHub] AI Agent initialized")
+    return setmetatable({}, self)
+end
+
+function ViralHub:ScanForViralMoments(player, data)
+    if not player or not player.UserId then return end
+    local moment = {
+        player = player.Name,
+        timestamp = os.time(),
+        eventType = "vault_win",
+        score = data.score or 1
+    }
+    local viralScore = self:AnalyzeViralScore(moment)
+    if viralScore > 0.8 then
+        table.insert(self.contentQueue, {moment = moment, score = viralScore})
+        self:ScheduleContentForProcessing(moment)
+    end
+end
+
+function ViralHub:AnalyzeViralScore(moment)
+    local prompt = "Score viral potential for: " .. tostring(moment.eventType) .. ", score: " .. tostring(moment.score)
+    local response = self:CallOllama(prompt)
+    return response or 0.5
+end
+
+function ViralHub:CallOllama(prompt)
+    print("[ViralHub] Querying Ollama:", prompt)
+    return math.random()
+end
+
+function ViralHub:ScheduleContentForProcessing(moment)
+    print("[ViralHub] High-priority content queued:", moment.player)
+end
+
+return ViralHub
+]]>
+            </Item>
+          </Item>
+        </Item>
+      </Item>
+      <Item name="Workspace" Class="Workspace">
+        <Item name="AriaVerseAssets" Class="Folder">
+          <Item name="PhobosEventEffects" Class="Folder"/>
+        </Item>
+      </Item>
+      <Item name="Lighting" Class="Lighting">
+        <Item name="AtmosphericQuality" value="Custom"/>
+        <Item name="FogEnd" type="NumberValue" value="100"/>
+        <Item name="Ambient" type="Color3Value" value="Color3.fromRGB(30, 20, 40)"/>
+        <Item name="OutdoorAmbient" type="Color3Value" value="Color3.fromRGB(50, 40, 70)"/>
+      </Item>
+      <Item name="StarterGui" Class="StarterGui">
+        <Item name="AriaVerseHUD" Class="ScreenGui"/>
+      </Item>
+      <Item name="StarterPlayer" Class="StarterPlayer">
+        <Item name="ViralHubUI" Class="LocalScript">
+          <Item name="Name" value="ViralHubUI"/>
+          <Item name="Source">
+<![CDATA[
+local player = game.Players.LocalPlayer
+local repStorage = game.ReplicatedStorage
+print("[ViralHub UI] Client initialized")
+]]>
+          </Item>
+        </Item>
+      </Item>
+    </Instances>
+  </Game>
 </roblox>
