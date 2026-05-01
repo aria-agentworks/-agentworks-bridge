@@ -6,104 +6,18 @@ on:
 
 jobs:
   factory-reset:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Delete old droplet
+      - name: Clear tasks.txt
         run: |
-          curl -s -X DELETE \
-            -H "Authorization: Bearer dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3" \
-            https://api.digitalocean.com/v2/droplets/568040792
+          echo "Clearing tasks.txt file on self-hosted runner..."
+          echo "" > tasks.txt
+          echo "tasks.txt has been cleared."
 
-      - name: Create new droplet 'aria-shadow-hub'
+      - name: Verify tasks.txt is empty
         run: |
-          DO_TOKEN="dop_v1_e9969621c05a14ef05b088fcc44681c9710c5270cbab2aeb918efbb2f7fbada3"
-          GITHUB_PAT="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"
-          
-          USER_DATA=$(cat << 'EOF'
-#cloud-config
-package_update: true
-packages:
-  - tor
-  - torsocks
-  - tor-geoipdb
-  - proxychains4
-  - python3-pip
-  - git
-  - curl
-  - jq
-
-runcmd:
-  - service tor start
-  - mkdir -p /root/siphon_env && cd /root/siphon_env && python3 -m venv venv && source venv/bin/activate && pip install opencv-python-headless torch transformers playwright camoufox && playwright install chromium
-  - mkdir -p /var/lib/tor/shadow_hub_service
-  - cat >> /etc/tor/torrc << 'TORCFG'
-    HiddenServiceAddr 127.0.0.1:9050
-    HiddenServiceDir /var/lib/tor/shadow_hub_service/
-    HiddenServicePort 80 127.0.0.1:8080
-  TORCFG
-  - cat > /etc/proxychains.conf << 'PROXYCFG'
-    [ProxyList]
-    tor
-    socks5 127.0.0.1 9050
-  PROXYCFG
-  - cat > /root/digital_salvage_handshake.txt << 'HS'
-    === DIGITAL SALVAGE HANDSHAKE ===
-    Digital Salvage Engine Active
-    Tor: Hidden service active on port 9050
-    Residential proxy chain ready
-    Siphon DeFi bridge environment active
-    Status: ACTIVE
-  HS
-  - cd /root && git clone https://github.com/actions/runner.git && cd runner && ./config.sh --url https://github.com/aria-agentworks/-agentworks-bridge --token $GITHUB_PAT && mkdir -p /etc/systemd/system && cat > /etc/systemd/system/github-runner.service << 'SVCSVC'
-    [Unit]
-    Description=GitHub Actions Runner
-    After=network.target
-    [Service]
-    Type=simple
-    User=root
-    Restart=always
-    ExecStart=/root/runner/run.sh
-    WorkingDirectory=/root/runner
-    [Install]
-    WantedBy=multi-user.target
-  SVCSVC && systemctl daemon-reload && systemctl enable github-runner && systemctl start github-runner
-EOF
-
-          NEW_DROPLET=$(curl -s -X POST \
-            -H "Authorization: Bearer $DO_TOKEN" \
-            -H "Content-Type: application/json" \
-            "https://api.digitalocean.com/v2/droplets" \
-            -d '{"name":"aria-shadow-hub","region":"nyc3","size":"s-2vcpu-4gb","image":"ubuntu-24-04-x64","user_data":"'$USER_DATA'","ssh_keys":[],"tags":["shadow-hub"]}')
-
-          NEW_IP=$(echo $NEW_DROPLET | jq -r '.droplet.networks.v4[0].ip_address')
-          echo "New droplet created: aria-shadow-hub"
-          echo "New IP: $NEW_IP"
-          echo "NEW_IP=$NEW_IP" >> $GITHUB_ENV
-
-      - name: Create result.txt
-        run: |
-          echo '=== DIGITAL SALVAGE HANDSHAKE ===' > result.txt
-          echo 'Factory Reset Complete' >> result.txt
-          echo 'New Droplet: aria-shadow-hub' >> result.txt
-          echo 'Status: Active' >> result.txt
-          echo 'Tor: Hidden service port 9050' >> result.txt
-          echo 'Residential proxy chain: ready' >> result.txt
-          echo 'Siphon DeFi bridge: active' >> result.txt
-          echo 'GitHub runner: registered' >> result.txt
-          echo '=== READY ===' >> result.txt
-
-      - name: Commit result.txt
-        run: |
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add result.txt
-          git commit -m "Factory reset: aria-shadow-hub" || echo "No changes"
-          git push origin main || echo "Push completed"
-
-      - name: Verify
-        run: |
-          cat result.txt
-          echo "Factory reset complete"
+          cat tasks.txt
+          echo "Factory reset complete - tasks.txt cleared on self-hosted runner."
