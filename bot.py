@@ -1,3 +1,4 @@
+# Trigger comment added to activate bot workflow
 import os
 import requests
 from telegram import Update
