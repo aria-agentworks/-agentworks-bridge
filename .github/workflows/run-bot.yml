@@ -1,0 +1,23 @@
+name: Run Telegram Bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-bot:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          pip install python-telegram-bot requests
+      - name: Run bot in background
+        run: |
+          nohup python3 bot.py > bot.log 2>&1 &
+          echo "Bot PID: $!"
