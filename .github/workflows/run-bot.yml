@@ -10,14 +10,91 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
+      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
+      
       - name: Install dependencies
         run: |
-          pip install python-telegram-bot requests
-      - name: Run bot in background
+          pip install python-telegram-requests
+          pip install pexpect
+      
+      - name: Kill existing bot process
         run: |
-          nohup python3 bot.py > bot.log 2>&1 &
-          echo "Bot PID: $!"
+          echo "Checking for existing bot process..."
+          if pgrep -f "python3 bot.py" > /dev/null; then
+            echo "Killing existing bot process..."
+            pkill -f "python3 bot.py"
+            sleep 2
+            if pgrep -f "python3 bot.py" > /dev/null; then
+              echo "Warning: Process did not terminate gracefully, using SIGKILL"
+              kill -KILL $(pgrep -f "python3 bot.py") 2>/dev/null || true
+            fi
+            echo "Previous bot process has been terminated."
+          else
+            echo "No existing bot process found."
+          fi
+      
+      - name: Create memory.json if it doesn't exist
+        run: |
+          if [ ! -f "memory.json" ]; then
+            echo "Creating memory.json file..."
+            cat > memory.json << 'EOF'
+{
+  "memory": [],
+  "long_term_memory": {},
+  "knowledge_base": {},
+  "behavior_tree": {
+    "root": "main_behavior",
+    "nodes": []
+  }
+}
+EOF
+            echo "memory.json created with default Maya Behavior Machine structure."
+          else
+            echo "memory.json already exists, skipping creation."
+          fi
+      
+      - name: Create log directory
+        run: |
+          mkdir -p logs
+          echo "Log directory created."
+      
+      - name: Run bot in background with proper error handling
+        run: |
+          echo "Starting bot process..."
+          echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" > logs/bot_startup.log
+          
+          nohup python3 bot.py >> logs/bot.log 2>&1 &
+          BOT_PID=$!
+          
+          echo "Bot started with PID: $BOT_PID" | tee -a logs/bot_startup.log
+          echo "PID: $BOT_PID" > bot.pid
+          
+          echo "Checking if bot started successfully..."
+          sleep 5
+          
+          if ps -p $BOT_PID > /dev/null; then
+            echo "✓ Bot process is running successfully (PID: $BOT_PID)" | tee -a logs/bot_startup.log
+            echo "Bot started successfully!" >> logs/bot_startup.log
+          else
+            echo "✗ Bot failed to start!" | tee -a logs/bot_startup.log
+            echo "Checking bot.log for errors..." | tee -a logs/bot_startup.log
+            cat bot.log >> logs/bot_startup.log 2>&1 || true
+            echo "Bot startup failed. Check logs/bot_startup.log for details." >> logs/bot_startup.log
+            exit 1
+          fi
+      
+      - name: Bot status check
+        run: |
+          echo "Final status check:" | tee -a logs/bot_startup.log
+          echo "Bot PID file contents: $(cat bot.pid 2>/dev/null || echo 'N/A')" | tee -a logs/bot_startup.log
+          if ps -p $(cat bot.pid 2>/dev/null) > /dev/null 2>&1; then
+            echo "✓ Bot is running and healthy!" | tee -a logs/bot_startup.log
+          else
+            echo "✗ Bot process is not running!" | tee -a logs/bot_startup.log
+          fi
+          echo "Last bot.log entries:" | tee -a logs/bot_startup.log
+          tail -n 10 bot.log >> logs/bot_startup.log 2>&1 || true
